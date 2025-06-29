@@ -2,6 +2,7 @@ package com.example.coursemanagement.models;
 
 import com.example.coursemanagement.enums.CategoryStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.Set;
@@ -16,6 +17,7 @@ public class Category {
     private UUID id;
 
     @Column(nullable = false)
+    @NotBlank(message = "Không được để trống")
     private String name;
 
     private CategoryStatus status;

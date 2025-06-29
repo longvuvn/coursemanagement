@@ -25,13 +25,16 @@ public class Course {
     @Size(min = 3, max = 255)
     private String title;
 
-    @NotNull
-    @DecimalMin(value = "0.0", inclusive = true)
+    @NotNull(message = "Giá không được để trống")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Giá phải lớn hơn 0.0")
+    @Column(nullable = false)
     private BigDecimal price;
 
     private CourseStatus status;
 
     @Size(max = 1000)
+    @Column(nullable = false)
+    @NotBlank(message = "Không được để trống")
     private String description;
 
     private String image;

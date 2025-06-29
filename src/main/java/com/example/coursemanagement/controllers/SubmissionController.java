@@ -3,6 +3,7 @@ package com.example.coursemanagement.controllers;
 import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.models.dto.SubmissionDTO;
 import com.example.coursemanagement.services.SubmissionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ public class SubmissionController {
 
     private final SubmissionService submissionService;
 
+    //lấy tất cả submissions
     @GetMapping
     public ResponseEntity<APIResponse<List<SubmissionDTO>>> getAllSubmissions() {
         List<SubmissionDTO> submissions = submissionService.getAllSubmissions();
@@ -31,6 +33,7 @@ public class SubmissionController {
         return ResponseEntity.ok(response);
     }
 
+    //lấy submission theo id
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<SubmissionDTO>> getSubmissionById(@PathVariable String id) {
         SubmissionDTO submission = submissionService.getSubmissionById(id);
@@ -44,8 +47,9 @@ public class SubmissionController {
         return ResponseEntity.ok(response);
     }
 
+    //tạo submission
     @PostMapping
-    public ResponseEntity<APIResponse<SubmissionDTO>> createSubmission(@RequestBody SubmissionDTO submissionDTO) {
+    public ResponseEntity<APIResponse<SubmissionDTO>> createSubmission(@Valid @RequestBody SubmissionDTO submissionDTO) {
         SubmissionDTO created = submissionService.createSubmission(submissionDTO);
         APIResponse<SubmissionDTO> response = new APIResponse<>(
                 "success",
@@ -57,6 +61,7 @@ public class SubmissionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    //xóa submission
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<SubmissionDTO>> updateSubmission(@PathVariable String id, @RequestBody SubmissionDTO submissionDTO) {
         SubmissionDTO updated = submissionService.updateSubmission(submissionDTO, id);

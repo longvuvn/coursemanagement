@@ -7,7 +7,6 @@ import com.example.coursemanagement.models.dto.OrderDetailDTO;
 import com.example.coursemanagement.repositories.CourseRepository;
 import com.example.coursemanagement.repositories.OrderDetailRepository;
 import com.example.coursemanagement.repositories.OrderRepository;
-import com.example.coursemanagement.services.CourseService;
 import com.example.coursemanagement.services.OrderDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         UUID orderUUID = UUID.fromString(orderDetailDTO.getOrderId());
         UUID courseId = UUID.fromString(orderDetailDTO.getCourseId());
 
-
         Order order = orderRepository.findById(orderUUID).orElse(null);
         Course course = courseRepository.findById(courseId).orElse(null);
 
@@ -60,7 +58,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     public OrderDetailDTO updateOrderDetail(OrderDetailDTO orderDetailDTO, String id) {
         UUID uuid = UUID.fromString(id);
         OrderDetail existingOrderDetail = orderDetailRepository.findById(uuid).orElse(null);
-        existingOrderDetail.setPriceAtPurchase(BigDecimal.valueOf(Double.parseDouble(orderDetailDTO.getPriceAtPurchase())));
+        existingOrderDetail
+                .setPriceAtPurchase(BigDecimal.valueOf(Double.parseDouble(orderDetailDTO.getPriceAtPurchase())));
         return orderDetailToOrderDetailDTO(orderDetailRepository.save(existingOrderDetail));
     }
 
@@ -80,8 +79,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 .collect(Collectors.toList());
     }
 
-
-    public OrderDetailDTO orderDetailToOrderDetailDTO(OrderDetail orderDetail){
+    public OrderDetailDTO orderDetailToOrderDetailDTO(OrderDetail orderDetail) {
         OrderDetailDTO dto = new OrderDetailDTO();
         dto.setId(String.valueOf(orderDetail.getId()));
         dto.setCourseId(String.valueOf(orderDetail.getCourse().getId()));

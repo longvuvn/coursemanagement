@@ -1,13 +1,7 @@
 package com.example.coursemanagement.models.dto;
 
-import com.example.coursemanagement.models.Chapter;
-import com.example.coursemanagement.models.Lesson;
 import lombok.Data;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-
 
 @Data
 public class CourseDTO {

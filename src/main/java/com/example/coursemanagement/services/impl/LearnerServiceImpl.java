@@ -1,6 +1,6 @@
 package com.example.coursemanagement.services.impl;
+
 import com.example.coursemanagement.enums.LearnerLevel;
-import com.example.coursemanagement.enums.LearnerStatus;
 import com.example.coursemanagement.enums.UserStatus;
 import com.example.coursemanagement.models.Learner;
 import com.example.coursemanagement.models.Role;
@@ -9,7 +9,6 @@ import com.example.coursemanagement.repositories.LearnerRepository;
 import com.example.coursemanagement.repositories.RegistrationRepository;
 import com.example.coursemanagement.services.LearnerService;
 import com.example.coursemanagement.services.exceptions.error.DuplicateResourceException;
-import com.example.coursemanagement.services.exceptions.error.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
@@ -46,29 +45,17 @@ public class LearnerServiceImpl implements LearnerService {
         Learner learner = new Learner();
         Instant now = Instant.now();
         Role role = roleService.getRoleByName("Learner");
-        if(learnerDTO.getAvatar() == null || learnerDTO.getAvatar().isEmpty()){
+        if (learnerDTO.getAvatar() == null || learnerDTO.getAvatar().isEmpty()) {
             learnerDTO.setAvatar(DEFAULT_AVATAR_PATH);
-        }
-        if (learnerDTO.getEmail() == null || learnerDTO.getEmail().trim().isEmpty()) {
-            throw new ValidationException("Email không được để trống");
         }
         if (learnerRepository.existsByEmail(learnerDTO.getEmail().trim())) {
             throw new DuplicateResourceException("Email đã tồn tại");
         }
-        if(learnerDTO.getFullName() == null || learnerDTO.getFullName().trim().isEmpty()){
-            throw new ValidationException("Tên người dùng không được để trống");
-        }
-        if(learnerRepository.existsByFullName(learnerDTO.getFullName().trim())){
+        if (learnerRepository.existsByFullName(learnerDTO.getFullName().trim())) {
             throw new DuplicateResourceException("Tên người dùng đã được sử dụng");
         }
-        if(learnerDTO.getPhoneNumber() == null || learnerDTO.getPhoneNumber().trim().isEmpty()){
-            throw new ValidationException("Số điện thoại không được để trống");
-        }
-        if(learnerRepository.existsByPhoneNumber(learnerDTO.getPhoneNumber().trim())){
+        if (learnerRepository.existsByPhoneNumber(learnerDTO.getPhoneNumber().trim())) {
             throw new DuplicateResourceException("Số điện thoại đã được sử dụng");
-        }
-        if(learnerDTO.getPassword() == null || learnerDTO.getPassword().trim().isEmpty()){
-            throw new ValidationException("Vui lòng nhập mật khẩu");
         }
         learner.setFullName(learnerDTO.getFullName());
         learner.setEmail(learnerDTO.getEmail());
@@ -108,13 +95,12 @@ public class LearnerServiceImpl implements LearnerService {
         int totalCourse = registrationRepository.countByLearnerId(uuid);
 
         Learner learner = learnerRepository.findById(uuid).orElse(null);
-        if(learner != null){
+        if (learner != null) {
             learner.setTotalCourses(totalCourse);
             learnerRepository.save(learner);
         }
         return null;
     }
-
 
     @Override
     public void deleteLearner(String id) {
@@ -123,7 +109,23 @@ public class LearnerServiceImpl implements LearnerService {
         learnerRepository.delete(existingLearner);
     }
 
-    public LearnerDTO learnertoLearnerDTO(Learner learner){
+    @Override
+    public List<LearnerDTO> getLearnersByCourseId(String courseId) {
+        List<Learner> learners = learnerRepository.findLearnsByCourseId(courseId);
+        return learners.stream()
+                .map(this::learnertoLearnerDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<LearnerDTO> getLearnerByName(String name) {
+        List<Learner> learners = learnerRepository.findLearnerByName(name);
+        return learners.stream()
+                .map(this::learnertoLearnerDTO)
+                .collect(Collectors.toList());
+    }
+
+    public LearnerDTO learnertoLearnerDTO(Learner learner) {
         LearnerDTO dto = new LearnerDTO();
         dto.setId(String.valueOf(learner.getId()));
         dto.setFullName(learner.getFullName());

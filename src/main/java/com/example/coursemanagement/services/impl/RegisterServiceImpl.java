@@ -4,6 +4,7 @@ import com.example.coursemanagement.enums.RegistrationStatus;
 import com.example.coursemanagement.models.Course;
 import com.example.coursemanagement.models.Learner;
 import com.example.coursemanagement.models.Registration;
+import com.example.coursemanagement.models.dto.CourseDTO;
 import com.example.coursemanagement.models.dto.RegistrationDTO;
 import com.example.coursemanagement.repositories.CourseRepository;
 import com.example.coursemanagement.repositories.LearnerRepository;
@@ -77,6 +78,8 @@ public class RegisterServiceImpl implements RegistrationService {
         registrationRepository.delete(existingRegistration);
 
     }
+
+
 
     public RegistrationDTO registrationToRegistrationDTO(Registration registration){
         RegistrationDTO dto = new RegistrationDTO();

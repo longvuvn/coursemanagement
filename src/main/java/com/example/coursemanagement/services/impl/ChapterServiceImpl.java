@@ -3,12 +3,10 @@ package com.example.coursemanagement.services.impl;
 import com.example.coursemanagement.enums.ChapterStatus;
 import com.example.coursemanagement.models.Chapter;
 import com.example.coursemanagement.models.Course;
-import com.example.coursemanagement.models.Lesson;
 import com.example.coursemanagement.models.dto.ChapterDTO;
 import com.example.coursemanagement.models.dto.LessonDTO;
 import com.example.coursemanagement.repositories.ChapterRepository;
 import com.example.coursemanagement.repositories.CourseRepository;
-import com.example.coursemanagement.repositories.LessonRepository;
 import com.example.coursemanagement.services.ChapterService;
 import com.example.coursemanagement.services.LessonService;
 import lombok.RequiredArgsConstructor;
@@ -71,10 +69,8 @@ public class ChapterServiceImpl implements ChapterService {
         return chapterDTO;
     }
 
-
-
     @Override
-    public List<ChapterDTO> getChaptersByCourseId(String courseId){
+    public List<ChapterDTO> getChaptersByCourseId(String courseId) {
         UUID uuid = UUID.fromString(courseId);
         List<Chapter> chapters = chapterRepository.getChaptersByCourseId(uuid);
         return chapters.stream()
@@ -89,7 +85,7 @@ public class ChapterServiceImpl implements ChapterService {
         chapterRepository.delete(existingChapter);
     }
 
-    public ChapterDTO chapterToChapterDTO(Chapter chapter){
+    public ChapterDTO chapterToChapterDTO(Chapter chapter) {
         ChapterDTO dto = new ChapterDTO();
         dto.setId(String.valueOf(chapter.getId()));
         dto.setTitle(chapter.getTitle());

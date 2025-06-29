@@ -1,19 +1,22 @@
 package com.example.coursemanagement.services.exceptions;
 
+import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.services.exceptions.error.*;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
-
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalException {
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorMessage> handleBadRequestException(BadRequestException e){
+    public ResponseEntity<ErrorMessage> handleBadRequestException(BadRequestException e) {
         LocalDateTime now = LocalDateTime.now();
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setStatusCode(HttpStatus.BAD_REQUEST.value());
@@ -23,7 +26,7 @@ public class GlobalException {
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ErrorMessage> handleDuplicateResourceException(DuplicateResourceException e){
+    public ResponseEntity<ErrorMessage> handleDuplicateResourceException(DuplicateResourceException e) {
         LocalDateTime now = LocalDateTime.now();
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setMessage(e.getMessage());
@@ -32,7 +35,7 @@ public class GlobalException {
     }
 
     @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ErrorMessage> handleForbiddenException(ForbiddenException e){
+    public ResponseEntity<ErrorMessage> handleForbiddenException(ForbiddenException e) {
         LocalDateTime now = LocalDateTime.now();
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setStatusCode(HttpStatus.FORBIDDEN.value());
@@ -42,7 +45,7 @@ public class GlobalException {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleResourceNotFoundException(ResourceNotFoundException e){
+    public ResponseEntity<ErrorMessage> handleResourceNotFoundException(ResourceNotFoundException e) {
         LocalDateTime now = LocalDateTime.now();
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setStatusCode(HttpStatus.NOT_FOUND.value());
@@ -52,7 +55,7 @@ public class GlobalException {
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ErrorMessage> handleUnauthorizedException(UnauthorizedException e){
+    public ResponseEntity<ErrorMessage> handleUnauthorizedException(UnauthorizedException e) {
         LocalDateTime now = LocalDateTime.now();
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setStatusCode(HttpStatus.UNAUTHORIZED.value());
@@ -62,7 +65,7 @@ public class GlobalException {
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ErrorMessage> handleValidationException(ValidationException e){
+    public ResponseEntity<ErrorMessage> handleValidationException(ValidationException e) {
         LocalDateTime now = LocalDateTime.now();
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setStatusCode(HttpStatus.BAD_REQUEST.value());
@@ -70,4 +73,27 @@ public class GlobalException {
         errorMessage.setTimestamp(now);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
+
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<APIResponse<Object>> handleConstraintViolationException(ConstraintViolationException ex) {
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getConstraintViolations().forEach(violation -> {
+            String field = violation.getPropertyPath().toString();
+            String message = violation.getMessage();
+            errors.put(field, message);
+        });
+
+        APIResponse<Object> response = new APIResponse<>(
+                "fail",
+                "Entity validation failed",
+                null,
+                errors,
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
 }

@@ -19,6 +19,7 @@ public class UserController {
 
     private final UserService userService;
 
+    //lấy tất cả users
     @GetMapping
     public ResponseEntity<APIResponse<List<UserDTO>>> getAllUsers() {
         List<UserDTO> users = userService.getAllUsers();
@@ -32,6 +33,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    // lấy user theo id
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<UserDTO>> getUserById(@PathVariable String id) {
         UserDTO user = userService.getUserById(id);
@@ -45,6 +47,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    //tạo user
     @PostMapping
     public ResponseEntity<APIResponse<UserDTO>> createUser(@Valid @RequestBody UserDTO userDTO) {
         UserDTO created = userService.CreateUser(userDTO);
@@ -58,6 +61,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    //chỉnh sửa user
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<UserDTO>> updateUser(@PathVariable String id, @RequestBody UserDTO userDTO) {
         UserDTO updated = userService.UpdateUser(userDTO, id);
@@ -71,6 +75,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    //xóa user
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<Void>> deleteUser(@PathVariable String id) {
         userService.DeleteUser(id);

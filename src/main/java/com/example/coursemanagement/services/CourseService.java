@@ -11,4 +11,6 @@ public interface CourseService {
     CourseDTO updateCourse(CourseDTO courseDTO, String id);
     CourseDTO updateTotalRating (String courseId);
     void deleteCourse(String id);
+    List<CourseDTO> getCoursesByLearnerId(String learnerId);
+    List<CourseDTO> getCoursesByTitle(String title);
 }

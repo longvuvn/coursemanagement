@@ -3,6 +3,7 @@ package com.example.coursemanagement.controllers;
 import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.models.dto.ReviewDTO;
 import com.example.coursemanagement.services.ReviewService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
+    //lấy tất cả reviews
     @GetMapping
     public ResponseEntity<APIResponse<List<ReviewDTO>>> getAllReviews() {
         List<ReviewDTO> reviews = reviewService.getAllReviews();
@@ -31,6 +33,7 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
+    //lấy review theo id
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<ReviewDTO>> getReviewById(@PathVariable String id) {
         ReviewDTO review = reviewService.getReviewById(id);
@@ -44,8 +47,9 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
+    //tạo review
     @PostMapping
-    public ResponseEntity<APIResponse<ReviewDTO>> createReview(@RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<APIResponse<ReviewDTO>> createReview(@Valid @RequestBody ReviewDTO reviewDTO) {
         ReviewDTO created = reviewService.createReview(reviewDTO);
         APIResponse<ReviewDTO> response = new APIResponse<>(
                 "success",
@@ -57,6 +61,7 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    //chỉnh sửa review
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<ReviewDTO>> updateReview(@PathVariable String id, @RequestBody ReviewDTO reviewDTO) {
         ReviewDTO updated = reviewService.updateReview(reviewDTO, id);
@@ -70,6 +75,7 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
+    //xóa review
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<Void>> deleteReview(@PathVariable String id) {
         reviewService.deleteReview(id);

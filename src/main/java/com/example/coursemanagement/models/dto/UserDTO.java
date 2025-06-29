@@ -1,5 +1,6 @@
 package com.example.coursemanagement.models.dto;
 
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data

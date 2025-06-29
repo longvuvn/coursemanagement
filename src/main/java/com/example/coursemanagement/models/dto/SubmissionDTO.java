@@ -2,8 +2,6 @@ package com.example.coursemanagement.models.dto;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class SubmissionDTO {
     private String id;

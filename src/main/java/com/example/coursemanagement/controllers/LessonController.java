@@ -3,6 +3,7 @@ package com.example.coursemanagement.controllers;
 import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.models.dto.LessonDTO;
 import com.example.coursemanagement.services.LessonService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ public class LessonController {
 
     private final LessonService lessonService;
 
+    //lấy tât cả lesson
     @GetMapping
     public ResponseEntity<APIResponse<List<LessonDTO>>> getAllLessons() {
         List<LessonDTO> lessons = lessonService.getAllLessons();
@@ -31,8 +33,9 @@ public class LessonController {
         return ResponseEntity.ok(response);
     }
 
+    //lấy lesson theo id
     @GetMapping("/{id}")
-    public ResponseEntity<APIResponse<LessonDTO>> getLessonById(@PathVariable String id) {
+    public ResponseEntity<APIResponse<LessonDTO>> getLessonById(@Valid @PathVariable String id) {
         LessonDTO lesson = lessonService.getLessonById(id);
         APIResponse<LessonDTO> response = new APIResponse<>(
                 "success",
@@ -44,6 +47,7 @@ public class LessonController {
         return ResponseEntity.ok(response);
     }
 
+    //tạo lesson
     @PostMapping
     public ResponseEntity<APIResponse<LessonDTO>> createLesson(@RequestBody LessonDTO lessonDTO) {
         LessonDTO created = lessonService.createLesson(lessonDTO);
@@ -57,6 +61,7 @@ public class LessonController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    //chỉnh sửa lesson
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<LessonDTO>> updateLesson(@PathVariable String id, @RequestBody LessonDTO lessonDTO) {
         LessonDTO updated = lessonService.updateLesson(lessonDTO, id);
@@ -70,6 +75,7 @@ public class LessonController {
         return ResponseEntity.ok(response);
     }
 
+    //xóa lesson
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<Void>> deleteLesson(@PathVariable String id) {
         lessonService.deleteLesson(id);

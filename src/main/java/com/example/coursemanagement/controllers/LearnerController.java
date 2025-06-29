@@ -1,7 +1,9 @@
 package com.example.coursemanagement.controllers;
 
 import com.example.coursemanagement.models.APIResponse;
+import com.example.coursemanagement.models.dto.CourseDTO;
 import com.example.coursemanagement.models.dto.LearnerDTO;
+import com.example.coursemanagement.services.CourseService;
 import com.example.coursemanagement.services.LearnerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,9 @@ import java.util.List;
 public class LearnerController {
 
     private final LearnerService learnerService;
+    private final CourseService courseService;
 
+    //lấy tất cả learners
     @GetMapping()
     public ResponseEntity<APIResponse<List<LearnerDTO>>> getAllLearners() {
         List<LearnerDTO> learners = learnerService.getAllLearners();
@@ -31,6 +35,7 @@ public class LearnerController {
         return ResponseEntity.ok(response);
     }
 
+    //lấy learners theo Id
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<LearnerDTO>> getLearnerById(@PathVariable String id) {
         LearnerDTO learnerDTO = learnerService.getLearnerById(id);
@@ -43,8 +48,35 @@ public class LearnerController {
         return ResponseEntity.ok(response);
     }
 
+    //lấy tất cả courses của learners
+    @GetMapping("/{id}/courses")
+    public ResponseEntity<APIResponse<List<CourseDTO>>> getLearnersCourses(@PathVariable String id) {
+        List<CourseDTO> courseDTOList = courseService.getCoursesByLearnerId(id);
+        APIResponse<List<CourseDTO>> response = new APIResponse<>(
+                "success",
+                "Learners courses retrieved successfully",
+                courseDTOList,
+                null,
+                LocalDateTime.now());
+        return ResponseEntity.ok(response);
+    }
+
+    //tìm kiếm learners theo name
+    @GetMapping("/search")
+    public ResponseEntity<APIResponse<List<LearnerDTO>>> searchLearner (@RequestParam String name){
+        List<LearnerDTO> learnerDTO = learnerService.getLearnerByName(name);
+        APIResponse<List<LearnerDTO>> response = new APIResponse<>(
+                "success",
+                "Learner retrieved successfully",
+                learnerDTO,
+                null,
+                LocalDateTime.now());
+        return ResponseEntity.status(200).body(response);
+    }
+
+    //tạo learner
     @PostMapping()
-    public ResponseEntity<APIResponse<LearnerDTO>> createLearner(@Valid @RequestBody LearnerDTO learnerDTO) {
+    public ResponseEntity<APIResponse<LearnerDTO>> createLearner(@Valid @RequestBody LearnerDTO learnerDTO) throws Exception {
         LearnerDTO created = learnerService.createLearner(learnerDTO);
         APIResponse<LearnerDTO> response = new APIResponse<>(
                 "success",
@@ -55,6 +87,7 @@ public class LearnerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    //chỉnh sửa learner
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<LearnerDTO>> updateLearner(@PathVariable String id, @RequestBody LearnerDTO learnerDTO) {
         LearnerDTO updated = learnerService.updateLearner(learnerDTO, id);
@@ -67,6 +100,7 @@ public class LearnerController {
         return ResponseEntity.ok(response);
     }
 
+    //xóa learner
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<Void>> deleteLearner(@PathVariable String id) {
         learnerService.deleteLearner(id);
