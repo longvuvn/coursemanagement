@@ -1,0 +1,38 @@
+package com.example.coursemanagement.models;
+
+import com.example.coursemanagement.enums.ReviewStatus;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.Data;
+
+import java.time.Instant;
+import java.util.UUID;
+
+@Entity
+@Table(name = "\"review\"")
+@Data
+public class Review {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Size(max = 1000)
+    private String comment;
+
+    @Min(1)
+    @Max(5)
+    @NotNull
+    private int rating;
+
+    private ReviewStatus status;
+    private Instant createdAt;
+    private Instant updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "learner_id")
+    private Learner learner;
+
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
+}

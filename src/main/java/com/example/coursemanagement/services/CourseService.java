@@ -1,0 +1,14 @@
+package com.example.coursemanagement.services;
+
+import com.example.coursemanagement.models.dto.CourseDTO;
+
+import java.util.List;
+
+public interface CourseService {
+    List<CourseDTO> getAllCourses();
+    CourseDTO getCourseById(String id);
+    CourseDTO createCourse(CourseDTO courseDTO);
+    CourseDTO updateCourse(CourseDTO courseDTO, String id);
+    CourseDTO updateTotalRating (String courseId);
+    void deleteCourse(String id);
+}
