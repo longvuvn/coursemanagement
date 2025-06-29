@@ -24,7 +24,11 @@ public class Lesson {
     private String title;
 
     private LessonStatus status;
+
+    @NotBlank(message = "Không được để trống")
+    @Column(nullable = false)
     private String referenceLink;
+
     private String content;
     private Instant createdAt;
     private Instant updatedAt;

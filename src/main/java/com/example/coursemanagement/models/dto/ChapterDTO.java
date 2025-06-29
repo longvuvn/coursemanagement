@@ -1,6 +1,5 @@
 package com.example.coursemanagement.models.dto;
 
-import com.example.coursemanagement.models.Lesson;
 import lombok.Data;
 
 import java.util.List;

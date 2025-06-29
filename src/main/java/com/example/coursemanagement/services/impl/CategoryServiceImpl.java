@@ -23,7 +23,7 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> categories = categoryRepository.findAll();
         return categories.stream()
                 .map(this::categoryToCategoryDTO)
-                .toList();
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Override

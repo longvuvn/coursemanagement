@@ -4,6 +4,7 @@ package com.example.coursemanagement.controllers;
 import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.models.dto.ChapterDTO;
 import com.example.coursemanagement.services.ChapterService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class ChapterController {
 
     private final ChapterService chapterService;
 
+    //lấy tất cả chapter
     @GetMapping
     public ResponseEntity<APIResponse<List<ChapterDTO>>> getAllChapters() {
         List<ChapterDTO> chapters = chapterService.getAllChapters();
@@ -32,6 +34,7 @@ public class ChapterController {
         return ResponseEntity.ok(response);
     }
 
+    //lấy chapter theo id
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<ChapterDTO>> getChapterById(@PathVariable String id) {
         ChapterDTO chapter = chapterService.getChapterById(id);
@@ -45,8 +48,9 @@ public class ChapterController {
         return ResponseEntity.ok(response);
     }
 
+    //Tạo chapter
     @PostMapping
-    public ResponseEntity<APIResponse<ChapterDTO>> createChapter(@RequestBody ChapterDTO chapterDTO) {
+    public ResponseEntity<APIResponse<ChapterDTO>> createChapter(@Valid @RequestBody ChapterDTO chapterDTO) {
         ChapterDTO created = chapterService.createChapter(chapterDTO);
         APIResponse<ChapterDTO> response = new APIResponse<>(
                 "success",
@@ -58,6 +62,7 @@ public class ChapterController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    //Chỉnh sửa chapter
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<ChapterDTO>> updateChapter(@PathVariable String id, @RequestBody ChapterDTO chapterDTO) {
         ChapterDTO updated = chapterService.updateChapter(chapterDTO, id);
@@ -71,6 +76,7 @@ public class ChapterController {
         return ResponseEntity.ok(response);
     }
 
+    //xóa chapter
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<Void>> deleteChapter(@PathVariable String id) {
         chapterService.deleteChapter(id);

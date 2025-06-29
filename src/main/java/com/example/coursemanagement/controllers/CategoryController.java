@@ -4,6 +4,7 @@ package com.example.coursemanagement.controllers;
 import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.models.dto.CategoryDTO;
 import com.example.coursemanagement.services.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    //lấy tất cả category
     @GetMapping
     public ResponseEntity<APIResponse<List<CategoryDTO>>> getAllCategories() {
         List<CategoryDTO> categories = categoryService.getAllCategories();
@@ -31,6 +33,7 @@ public class CategoryController {
         return ResponseEntity.ok(response);
     }
 
+    //lâ category theo id
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<CategoryDTO>> getCategoryById(@PathVariable String id) {
         CategoryDTO category = categoryService.getCategoryById(id);
@@ -44,8 +47,9 @@ public class CategoryController {
         return ResponseEntity.ok(response);
     }
 
+    //tạo category
     @PostMapping
-    public ResponseEntity<APIResponse<CategoryDTO>> createCategory(@RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<APIResponse<CategoryDTO>> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO created = categoryService.createCategory(categoryDTO);
         APIResponse<CategoryDTO> response = new APIResponse<>(
                 "success",
@@ -57,6 +61,7 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    //chỉnh sửa category
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<CategoryDTO>> updateCategory(@PathVariable String id, @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO updated = categoryService.updateCategory(categoryDTO, id);
@@ -70,6 +75,7 @@ public class CategoryController {
         return ResponseEntity.ok(response);
     }
 
+    //xóa category
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<Void>> deleteCategory(@PathVariable String id) {
         categoryService.deleteCategory(id);

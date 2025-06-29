@@ -2,7 +2,10 @@ package com.example.coursemanagement.controllers;
 
 import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.models.dto.CourseDTO;
+import com.example.coursemanagement.models.dto.LearnerDTO;
 import com.example.coursemanagement.services.CourseService;
+import com.example.coursemanagement.services.LearnerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +20,9 @@ import java.util.List;
 public class CourseController {
 
     private final CourseService courseService;
+    private final LearnerService learnerService;
 
+    //lấy tất cả courses
     @GetMapping
     public ResponseEntity<APIResponse<List<CourseDTO>>> getAllCourses() {
         List<CourseDTO> courses = courseService.getAllCourses();
@@ -31,6 +36,7 @@ public class CourseController {
         return ResponseEntity.ok(response);
     }
 
+    //lấy course theo Id
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<CourseDTO>> getCourseById(@PathVariable String id) {
         CourseDTO course = courseService.getCourseById(id);
@@ -44,8 +50,37 @@ public class CourseController {
         return ResponseEntity.ok(response);
     }
 
+    //lấy tất cả learners trong course
+    @GetMapping("/{id}/learners")
+    public ResponseEntity<APIResponse<List<LearnerDTO>>> getLearnersByCourseId(@PathVariable String id) {
+        List<LearnerDTO> learners = learnerService.getLearnersByCourseId(id);
+        APIResponse<List<LearnerDTO>> response = new APIResponse<>(
+                "success",
+                "Learners retrieved successfully",
+                learners,
+                null,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    //tìm kiếm course theo title
+    @GetMapping("/search")
+    public ResponseEntity<APIResponse<List<CourseDTO>>> searchCourse (@RequestParam String title){
+        List<CourseDTO> courseDTOList = courseService.getCoursesByTitle(title);
+        APIResponse<List<CourseDTO>> response = new APIResponse<>(
+                "success",
+                "Courses retrieved successfully",
+                courseDTOList,
+                null,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(200).body(response);
+    }
+
+    //tạo course
     @PostMapping
-    public ResponseEntity<APIResponse<CourseDTO>> createCourse(@RequestBody CourseDTO courseDTO) {
+    public ResponseEntity<APIResponse<CourseDTO>> createCourse(@Valid @RequestBody CourseDTO courseDTO) {
         CourseDTO created = courseService.createCourse(courseDTO);
         APIResponse<CourseDTO> response = new APIResponse<>(
                 "success",
@@ -57,6 +92,7 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    //chỉnh sửa course
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<CourseDTO>> updateCourse(@PathVariable String id, @RequestBody CourseDTO courseDTO) {
         CourseDTO updated = courseService.updateCourse(courseDTO, id);
@@ -70,6 +106,7 @@ public class CourseController {
         return ResponseEntity.ok(response);
     }
 
+    //xóa course
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<Void>> deleteCourse(@PathVariable String id) {
         courseService.deleteCourse(id);

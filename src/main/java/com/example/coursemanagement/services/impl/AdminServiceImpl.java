@@ -6,6 +6,8 @@ import com.example.coursemanagement.models.Role;
 import com.example.coursemanagement.models.dto.AdminDTO;
 import com.example.coursemanagement.repositories.AdminRepository;
 import com.example.coursemanagement.services.AdminService;
+import com.example.coursemanagement.services.exceptions.error.DuplicateResourceException;
+import com.example.coursemanagement.services.exceptions.error.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +47,27 @@ public class AdminServiceImpl implements AdminService {
         Role role = roleService.getRoleByName("Admin");
         if(adminDTO.getAvatar() == null || adminDTO.getAvatar().isEmpty()){
             adminDTO.setAvatar(DEFAULT_AVATAR_PATH);
+        }
+        if (adminDTO.getEmail() == null || adminDTO.getEmail().trim().isEmpty()) {
+            throw new ValidationException("Email không được để trống");
+        }
+        if (adminRepository.existsByEmail(adminDTO.getEmail().trim())) {
+            throw new DuplicateResourceException("Email đã tồn tại");
+        }
+        if(adminDTO.getFullName() == null || adminDTO.getFullName().trim().isEmpty()){
+            throw new ValidationException("Tên người dùng không được để trống");
+        }
+        if(adminRepository.existsByFullName(adminDTO.getFullName().trim())){
+            throw new DuplicateResourceException("Tên người dùng đã được sử dụng");
+        }
+        if(adminDTO.getPhoneNumber() == null || adminDTO.getPhoneNumber().trim().isEmpty()){
+            throw new ValidationException("Số điện thoại không được để trống");
+        }
+        if(adminRepository.existsByPhoneNumber(adminDTO.getPhoneNumber().trim())){
+            throw new DuplicateResourceException("Số điện thoại đã được sử dụng");
+        }
+        if(adminDTO.getPassword() == null || adminDTO.getPassword().trim().isEmpty()){
+            throw new ValidationException("Vui lòng nhập mật khẩu");
         }
         admin.setFullName(adminDTO.getFullName());
         admin.setEmail(adminDTO.getEmail());

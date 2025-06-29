@@ -10,7 +10,6 @@ import com.example.coursemanagement.repositories.CourseRepository;
 import com.example.coursemanagement.repositories.ReviewRepository;
 import com.example.coursemanagement.services.ChapterService;
 import com.example.coursemanagement.services.CourseService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -32,10 +31,10 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseDTO> getAllCourses() {
-       List<Course> courses = courseRepository.findAll();
-       return courses.stream()
-               .map(this::courseTOCourseDTO)
-               .collect(Collectors.toList());
+        List<Course> courses = courseRepository.findAll();
+        return courses.stream()
+                .map(this::courseTOCourseDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -103,8 +102,23 @@ public class CourseServiceImpl implements CourseService {
         return courseTOCourseDTO(course);
 
     }
+    @Override
+    public List<CourseDTO> getCoursesByLearnerId(String learnerId) {
+        List<Course> courseList = courseRepository.findCoursesByLearnerId(learnerId);
+        return courseList.stream()
+                .map(this:: courseTOCourseDTO)
+                .collect(Collectors.toList());
+    }
 
-    public CourseDTO courseTOCourseDTO(Course course){
+    @Override
+    public List<CourseDTO> getCoursesByTitle(String title) {
+        List<Course> courseList = courseRepository.findCourseByTitle(title);
+        return courseList.stream()
+                .map(this:: courseTOCourseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public CourseDTO courseTOCourseDTO(Course course) {
         CourseDTO dto = new CourseDTO();
         dto.setId(String.valueOf(course.getId()));
         dto.setTitle(course.getTitle());

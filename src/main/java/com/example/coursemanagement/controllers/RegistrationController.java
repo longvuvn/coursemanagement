@@ -3,6 +3,7 @@ package com.example.coursemanagement.controllers;
 import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.models.dto.RegistrationDTO;
 import com.example.coursemanagement.services.RegistrationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ public class RegistrationController {
 
     private final RegistrationService registrationService;
 
+    //lấy tất cả registration
     @GetMapping
     public ResponseEntity<APIResponse<List<RegistrationDTO>>> getAllRegistrations() {
         List<RegistrationDTO> registrations = registrationService.getAllRegistrations();
@@ -31,6 +33,7 @@ public class RegistrationController {
         return ResponseEntity.ok(response);
     }
 
+    //lấy registration theo id
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<RegistrationDTO>> getRegistrationById(@PathVariable String id) {
         RegistrationDTO registration = registrationService.getRegistrationById(id);
@@ -44,8 +47,9 @@ public class RegistrationController {
         return ResponseEntity.ok(response);
     }
 
+    //tạo registration
     @PostMapping
-    public ResponseEntity<APIResponse<RegistrationDTO>> createRegistration(@RequestBody RegistrationDTO registrationDTO) {
+    public ResponseEntity<APIResponse<RegistrationDTO>> createRegistration(@Valid @RequestBody RegistrationDTO registrationDTO) {
         RegistrationDTO created = registrationService.createRegistration(registrationDTO);
         APIResponse<RegistrationDTO> response = new APIResponse<>(
                 "success",
@@ -57,6 +61,7 @@ public class RegistrationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    //chỉnh sửa registration
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<RegistrationDTO>> updateRegistration(@PathVariable String id, @RequestBody RegistrationDTO registrationDTO) {
         RegistrationDTO updated = registrationService.updateRegistration(registrationDTO, id);
@@ -70,6 +75,7 @@ public class RegistrationController {
         return ResponseEntity.ok(response);
     }
 
+    //xóa registration
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<Void>> deleteRegistration(@PathVariable String id) {
         registrationService.deleteRegistration(id);

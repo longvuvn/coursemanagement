@@ -6,15 +6,12 @@ import com.example.coursemanagement.models.Order;
 import com.example.coursemanagement.models.dto.OrderDTO;
 import com.example.coursemanagement.models.dto.OrderDetailDTO;
 import com.example.coursemanagement.repositories.LearnerRepository;
-import com.example.coursemanagement.repositories.OrderDetailRepository;
 import com.example.coursemanagement.repositories.OrderRepository;
 import com.example.coursemanagement.services.OrderDetailService;
 import com.example.coursemanagement.services.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -52,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
         order.setCreatedAt(now);
         order.setLearner(learner);
         Order savedOrder = orderRepository.save(order);
-        if(savedOrder.getId() != null){
+        if (savedOrder.getId() != null) {
             OrderDetailDTO detailDTO = orderDTO.getOrderDetail();
             detailDTO.setOrderId(savedOrder.getId().toString());
             orderDetailService.createOrderDetail(detailDTO);
@@ -75,15 +72,16 @@ public class OrderServiceImpl implements OrderService {
         Order existingOrder = orderRepository.findById(uuid).orElse(null);
         orderRepository.delete(existingOrder);
     }
-    public OrderDTO orderToOrderDTO (Order order){
+
+    public OrderDTO orderToOrderDTO(Order order) {
         OrderDTO dto = new OrderDTO();
         dto.setId(String.valueOf(order.getId()));
         dto.setCreatedAt(String.valueOf(order.getCreatedAt()));
         dto.setStatus(order.getStatus().name());
         List<OrderDetailDTO> detailDTO = orderDetailService.getOrderDetailsByOrderId(order.getId().toString());
-        if(detailDTO != null && !detailDTO.isEmpty()){
+        if (detailDTO != null && !detailDTO.isEmpty()) {
             dto.setOrderDetail(detailDTO.get(0));
-        }else {
+        } else {
             dto.setOrderDetail(null);
         }
         dto.setLearnerId(String.valueOf(order.getLearner().getId()));

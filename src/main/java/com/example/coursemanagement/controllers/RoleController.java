@@ -19,6 +19,7 @@ public class RoleController {
 
     private final RoleService roleService;
 
+    //lấy tất cả roles
     @GetMapping
     public ResponseEntity<APIResponse<List<RoleDTO>>> getAllRoles() {
         List<RoleDTO> roles = roleService.getAllRoles();
@@ -32,6 +33,7 @@ public class RoleController {
         return ResponseEntity.ok(response);
     }
 
+    //lấy role theo id
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<RoleDTO>> getRoleById(@PathVariable String id) {
         RoleDTO role = roleService.getRoleById(id);
@@ -45,6 +47,7 @@ public class RoleController {
         return ResponseEntity.ok(response);
     }
 
+    //tạo role
     @PostMapping
     public ResponseEntity<APIResponse<RoleDTO>> createRole(@RequestBody @Valid RoleDTO roleDTO) {
         RoleDTO created = roleService.createRole(roleDTO);
@@ -58,6 +61,7 @@ public class RoleController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    //chỉnh sửa role
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<RoleDTO>> updateRole(@PathVariable String id, @RequestBody RoleDTO roleDTO) {
         RoleDTO updated = roleService.updateRole(roleDTO, id);
@@ -71,6 +75,7 @@ public class RoleController {
         return ResponseEntity.ok(response);
     }
 
+    //xóa role
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<Void>> deleteRole(@PathVariable String id) {
         roleService.deleteRole(id);

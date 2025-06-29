@@ -3,6 +3,7 @@ package com.example.coursemanagement.controllers;
 import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.models.dto.OrderDTO;
 import com.example.coursemanagement.services.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    //lấy tất cả order
     @GetMapping
     public ResponseEntity<APIResponse<List<OrderDTO>>> getAllOrders() {
         List<OrderDTO> orders = orderService.getAllOrders();
@@ -31,6 +33,7 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
+    //lấy order theo id
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<OrderDTO>> getOrderById(@PathVariable String id) {
         OrderDTO order = orderService.getOrderById(id);
@@ -44,8 +47,9 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
+    //tạo order
     @PostMapping
-    public ResponseEntity<APIResponse<OrderDTO>> createOrder(@RequestBody OrderDTO orderDTO) {
+    public ResponseEntity<APIResponse<OrderDTO>> createOrder(@Valid @RequestBody OrderDTO orderDTO) {
         OrderDTO created = orderService.createOrder(orderDTO);
         APIResponse<OrderDTO> response = new APIResponse<>(
                 "success",
@@ -57,6 +61,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    //chỉnh sửa order
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<OrderDTO>> updateOrder(@PathVariable String id, @RequestBody OrderDTO orderDTO) {
         OrderDTO updated = orderService.updateOrder(orderDTO, id);
@@ -70,6 +75,7 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
+    //xóa order
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<Void>> deleteOrder(@PathVariable String id) {
         orderService.deleteOrder(id);

@@ -1,5 +1,6 @@
 package com.example.coursemanagement.services;
 
+import com.example.coursemanagement.models.dto.CourseDTO;
 import com.example.coursemanagement.models.dto.RegistrationDTO;
 
 import java.util.List;
