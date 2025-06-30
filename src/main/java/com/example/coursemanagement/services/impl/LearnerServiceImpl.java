@@ -10,6 +10,7 @@ import com.example.coursemanagement.repositories.RegistrationRepository;
 import com.example.coursemanagement.services.LearnerService;
 import com.example.coursemanagement.services.exceptions.error.DuplicateResourceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
@@ -24,6 +25,7 @@ public class LearnerServiceImpl implements LearnerService {
     private static final String DEFAULT_AVATAR_PATH = "/data/images/c21f969b5f03d33d43e04f8f136e7682.png";
     private final RoleServiceImpl roleService;
     private final RegistrationRepository registrationRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<LearnerDTO> getAllLearners() {
@@ -60,7 +62,7 @@ public class LearnerServiceImpl implements LearnerService {
         learner.setFullName(learnerDTO.getFullName());
         learner.setEmail(learnerDTO.getEmail());
         learner.setPhoneNumber(learnerDTO.getPhoneNumber());
-        learner.setPassword(learnerDTO.getPassword());
+        learner.setPassword(passwordEncoder.encode(learnerDTO.getPassword()));
         learner.setAvatar(learnerDTO.getAvatar());
         learner.setRole(role);
         learner.setStatus(UserStatus.ACTIVE);
