@@ -79,6 +79,30 @@ public class ChapterServiceImpl implements ChapterService {
     }
 
     @Override
+    public List<ChapterDTO> getChapterByTitle(String title) {
+        List<Chapter> chapters = chapterRepository.findChapterByTitle(title);
+        return chapters.stream()
+                .map(this::chapterToChapterDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ChapterDTO> getLatestChapters() {
+        List<Chapter> chapterList = chapterRepository.findLatestChapters();
+        return chapterList.stream()
+                .map(this::chapterToChapterDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ChapterDTO> getOldestChapters() {
+        List<Chapter> chapterList = chapterRepository.findOldestChpaters();
+        return chapterList.stream()
+                .map(this::chapterToChapterDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void deleteChapter(String id) {
         UUID uuid = UUID.fromString(id);
         Chapter existingChapter = chapterRepository.findById(uuid).orElse(null);

@@ -118,6 +118,22 @@ public class CourseServiceImpl implements CourseService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<CourseDTO> getLatestCourses() {
+        List<Course> courseList = courseRepository.findLatestCourses();
+        return courseList.stream()
+                .map(this:: courseTOCourseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CourseDTO> getOldestCourses() {
+        List<Course> courseList = courseRepository.findOldestCourses();
+        return courseList.stream()
+                .map(this:: courseTOCourseDTO)
+                .collect(Collectors.toList());
+    }
+
     public CourseDTO courseTOCourseDTO(Course course) {
         CourseDTO dto = new CourseDTO();
         dto.setId(String.valueOf(course.getId()));
