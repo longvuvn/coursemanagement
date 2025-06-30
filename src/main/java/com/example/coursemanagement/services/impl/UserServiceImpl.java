@@ -6,6 +6,7 @@ import com.example.coursemanagement.models.dto.UserDTO;
 import com.example.coursemanagement.repositories.UserRepository;
 import com.example.coursemanagement.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
@@ -19,7 +20,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private static final String DEFAULT_AVATAR_PATH = "/data/images/c21f969b5f03d33d43e04f8f136e7682.png";
     private final RoleServiceImpl roleService;
-
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<UserDTO> getAllUsers() {
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDTO.getEmail());
         user.setRole(role);
         user.setPhoneNumber(userDTO.getPhoneNumber());
-        user.setPassword(userDTO.getPassword());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setAvatar(userDTO.getAvatar());
         user.setStatus(UserStatus.ACTIVE);
         user.setCreatedAt(now);

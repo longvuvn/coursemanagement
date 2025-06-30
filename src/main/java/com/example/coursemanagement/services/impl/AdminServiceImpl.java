@@ -9,6 +9,7 @@ import com.example.coursemanagement.services.AdminService;
 import com.example.coursemanagement.services.exceptions.error.DuplicateResourceException;
 import com.example.coursemanagement.services.exceptions.error.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -24,6 +25,7 @@ public class AdminServiceImpl implements AdminService {
     private final AdminRepository adminRepository;
     private static final String DEFAULT_AVATAR_PATH = "/data/images/c21f969b5f03d33d43e04f8f136e7682.png";
     private final RoleServiceImpl roleService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<AdminDTO> getAllAdmins() {
@@ -72,7 +74,7 @@ public class AdminServiceImpl implements AdminService {
         admin.setFullName(adminDTO.getFullName());
         admin.setEmail(adminDTO.getEmail());
         admin.setPhoneNumber(adminDTO.getPhoneNumber());
-        admin.setPassword(adminDTO.getPassword());
+        admin.setPassword(passwordEncoder.encode(adminDTO.getPassword()));
         admin.setAvatar(adminDTO.getAvatar());
         admin.setRole(role);
         admin.setStatus(UserStatus.ACTIVE);
