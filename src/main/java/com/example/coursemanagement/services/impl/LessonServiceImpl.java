@@ -89,6 +89,30 @@ public class LessonServiceImpl implements LessonService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<LessonDTO> getLessonsByTitle(String title) {
+        List<Lesson> lessonList = lessonRepository.findLessonByTitle(title);
+        return lessonList.stream()
+                .map(this::lessonToLessonDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<LessonDTO> getLatestLessons() {
+        List<Lesson> lessonList = lessonRepository.findLatestLessons();
+        return lessonList.stream()
+                .map(this::lessonToLessonDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<LessonDTO> getOldestLessons() {
+        List<Lesson> lessonList = lessonRepository.findOldestLessons();
+        return lessonList.stream()
+                .map(this::lessonToLessonDTO)
+                .collect(Collectors.toList());
+    }
+
     public LessonDTO lessonToLessonDTO(Lesson lesson){
         LessonDTO dto = new LessonDTO();
         dto.setId(String.valueOf(lesson.getId()));

@@ -1,6 +1,7 @@
 package com.example.coursemanagement.controllers;
 
 import com.example.coursemanagement.models.APIResponse;
+import com.example.coursemanagement.models.dto.ChapterDTO;
 import com.example.coursemanagement.models.dto.LessonDTO;
 import com.example.coursemanagement.services.LessonService;
 import jakarta.validation.Valid;
@@ -41,6 +42,48 @@ public class LessonController {
                 "success",
                 "Lesson retrieved successfully",
                 lesson,
+                null,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    //lấy lesson theo title
+    @GetMapping("/search")
+    public ResponseEntity<APIResponse<List<LessonDTO>>> getLessonsByTitle(@RequestParam String title) {
+        List<LessonDTO> lessons = lessonService.getLessonsByTitle(title);
+        APIResponse<List<LessonDTO>> response = new APIResponse<>(
+                "success",
+                "Lessons retrieved successfully",
+                lessons,
+                null,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    //lấy lesson mới nhất
+    @GetMapping("/latest")
+    public ResponseEntity<APIResponse<List<LessonDTO>>> getLatestLessons() {
+        List<LessonDTO> lessons = lessonService.getLatestLessons();
+        APIResponse<List<LessonDTO>> response = new APIResponse<>(
+                "success",
+                "Lessons retrieved successfully",
+                lessons,
+                null,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    //lấy lesson cũ nhất
+    @GetMapping("/oldest")
+    public ResponseEntity<APIResponse<List<LessonDTO>>> getOldestLessons() {
+        List<LessonDTO> lessons = lessonService.getOldestLessons();
+        APIResponse<List<LessonDTO>> response = new APIResponse<>(
+                "success",
+                "Lessons retrieved successfully",
+                lessons,
                 null,
                 LocalDateTime.now()
         );

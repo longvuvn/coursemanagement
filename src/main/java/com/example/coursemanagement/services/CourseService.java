@@ -13,4 +13,6 @@ public interface CourseService {
     void deleteCourse(String id);
     List<CourseDTO> getCoursesByLearnerId(String learnerId);
     List<CourseDTO> getCoursesByTitle(String title);
+    List<CourseDTO> getLatestCourses();
+    List<CourseDTO> getOldestCourses();
 }

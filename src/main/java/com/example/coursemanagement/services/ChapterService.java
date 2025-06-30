@@ -1,6 +1,7 @@
 package com.example.coursemanagement.services;
 
 import com.example.coursemanagement.models.dto.ChapterDTO;
+import com.example.coursemanagement.models.dto.CourseDTO;
 
 import java.util.List;
 
@@ -12,4 +13,7 @@ public interface ChapterService {
     ChapterDTO getChapterById(String id);
     void deleteChapter(String id);
     List<ChapterDTO> getChaptersByCourseId(String courseId);
+    List<ChapterDTO> getChapterByTitle(String title);
+    List<ChapterDTO> getLatestChapters();
+    List<ChapterDTO> getOldestChapters();
 }

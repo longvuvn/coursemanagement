@@ -3,6 +3,7 @@ package com.example.coursemanagement.controllers;
 
 import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.models.dto.ChapterDTO;
+import com.example.coursemanagement.models.dto.CourseDTO;
 import com.example.coursemanagement.services.ChapterService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,48 @@ public class ChapterController {
                 "success",
                 "Chapter retrieved successfully",
                 chapter,
+                null,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    //lấy chapter theo title
+    @GetMapping("/search")
+    public ResponseEntity<APIResponse<List<ChapterDTO>>> getChapterByTitle(@RequestParam String title) {
+        List<ChapterDTO> chapters = chapterService.getChapterByTitle(title);
+        APIResponse<List<ChapterDTO>> response = new APIResponse<>(
+                "success",
+                "Chapters retrieved successfully",
+                chapters,
+                null,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    //lấy chapter mới nhất
+    @GetMapping("/latest")
+    public ResponseEntity<APIResponse<List<ChapterDTO>>> getLatestChapters() {
+        List<ChapterDTO> chapters = chapterService.getLatestChapters();
+        APIResponse<List<ChapterDTO>> response = new APIResponse<>(
+                "success",
+                "Chapters retrieved successfully",
+                chapters,
+                null,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    //lấy chapter cũ nhất
+    @GetMapping("/oldest")
+    public ResponseEntity<APIResponse<List<ChapterDTO>>> getOldestChapters() {
+        List<ChapterDTO> chapters = chapterService.getOldestChapters();
+        APIResponse<List<ChapterDTO>> response = new APIResponse<>(
+                "success",
+                "Chapters retrieved successfully",
+                chapters,
                 null,
                 LocalDateTime.now()
         );

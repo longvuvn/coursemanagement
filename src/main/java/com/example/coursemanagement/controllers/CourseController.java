@@ -78,6 +78,34 @@ public class CourseController {
         return ResponseEntity.status(200).body(response);
     }
 
+    //lấy course mới nhất
+    @GetMapping("/latest")
+    public ResponseEntity<APIResponse<List<CourseDTO>>> getLatestCourses() {
+        List<CourseDTO> courses = courseService.getLatestCourses();
+        APIResponse<List<CourseDTO>> response = new APIResponse<>(
+                "success",
+                "Courses retrieved successfully",
+                courses,
+                null,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    //lấy khóa học cũ nhất
+    @GetMapping("/oldest")
+    public ResponseEntity<APIResponse<List<CourseDTO>>> getOldestCourses() {
+        List<CourseDTO> courses = courseService.getOldestCourses();
+        APIResponse<List<CourseDTO>> response = new APIResponse<>(
+                "success",
+                "Courses retrieved successfully",
+                courses,
+                null,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.ok(response);
+    }
+
     //tạo course
     @PostMapping
     public ResponseEntity<APIResponse<CourseDTO>> createCourse(@Valid @RequestBody CourseDTO courseDTO) {
