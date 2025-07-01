@@ -5,7 +5,6 @@ import com.example.coursemanagement.services.exceptions.error.*;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
@@ -74,7 +73,6 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
 
-
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<APIResponse<Object>> handleConstraintViolationException(ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -90,8 +88,7 @@ public class GlobalException {
                 "Entity validation failed",
                 null,
                 errors,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

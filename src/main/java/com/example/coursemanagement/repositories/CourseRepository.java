@@ -1,7 +1,6 @@
 package com.example.coursemanagement.repositories;
 
 import com.example.coursemanagement.models.Course;
-import com.example.coursemanagement.models.Learner;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,7 +21,7 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
     @Query(value = "SELECT c.* FROM course c ORDER BY c.created_at DESC", nativeQuery = true)
     List<Course> findLatestCourses();
 
-    //tìm khóa học cũ nhất
+    // tìm khóa học cũ nhất
     @Query(value = "SELECT c.* FROM course c ORDER BY c.created_at ASC", nativeQuery = true)
     List<Course> findOldestCourses();
 }
