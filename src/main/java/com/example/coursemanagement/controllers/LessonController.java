@@ -1,7 +1,6 @@
 package com.example.coursemanagement.controllers;
 
 import com.example.coursemanagement.models.APIResponse;
-import com.example.coursemanagement.models.dto.ChapterDTO;
 import com.example.coursemanagement.models.dto.LessonDTO;
 import com.example.coursemanagement.services.LessonService;
 import jakarta.validation.Valid;
@@ -20,7 +19,7 @@ public class LessonController {
 
     private final LessonService lessonService;
 
-    //lấy tât cả lesson
+    // lấy tât cả lesson
     @GetMapping
     public ResponseEntity<APIResponse<List<LessonDTO>>> getAllLessons() {
         List<LessonDTO> lessons = lessonService.getAllLessons();
@@ -29,12 +28,11 @@ public class LessonController {
                 "Lessons retrieved successfully",
                 lessons,
                 null,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
 
-    //lấy lesson theo id
+    // lấy lesson theo id
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<LessonDTO>> getLessonById(@Valid @PathVariable String id) {
         LessonDTO lesson = lessonService.getLessonById(id);
@@ -43,12 +41,11 @@ public class LessonController {
                 "Lesson retrieved successfully",
                 lesson,
                 null,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
 
-    //lấy lesson theo title
+    // lấy lesson theo title
     @GetMapping("/search")
     public ResponseEntity<APIResponse<List<LessonDTO>>> getLessonsByTitle(@RequestParam String title) {
         List<LessonDTO> lessons = lessonService.getLessonsByTitle(title);
@@ -57,12 +54,11 @@ public class LessonController {
                 "Lessons retrieved successfully",
                 lessons,
                 null,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
 
-    //lấy lesson mới nhất
+    // lấy lesson mới nhất
     @GetMapping("/latest")
     public ResponseEntity<APIResponse<List<LessonDTO>>> getLatestLessons() {
         List<LessonDTO> lessons = lessonService.getLatestLessons();
@@ -71,12 +67,11 @@ public class LessonController {
                 "Lessons retrieved successfully",
                 lessons,
                 null,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
 
-    //lấy lesson cũ nhất
+    // lấy lesson cũ nhất
     @GetMapping("/oldest")
     public ResponseEntity<APIResponse<List<LessonDTO>>> getOldestLessons() {
         List<LessonDTO> lessons = lessonService.getOldestLessons();
@@ -85,12 +80,11 @@ public class LessonController {
                 "Lessons retrieved successfully",
                 lessons,
                 null,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
 
-    //tạo lesson
+    // tạo lesson
     @PostMapping
     public ResponseEntity<APIResponse<LessonDTO>> createLesson(@RequestBody LessonDTO lessonDTO) {
         LessonDTO created = lessonService.createLesson(lessonDTO);
@@ -99,26 +93,25 @@ public class LessonController {
                 "Lesson created successfully",
                 created,
                 null,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    //chỉnh sửa lesson
+    // chỉnh sửa lesson
     @PutMapping("/{id}")
-    public ResponseEntity<APIResponse<LessonDTO>> updateLesson(@PathVariable String id, @RequestBody LessonDTO lessonDTO) {
+    public ResponseEntity<APIResponse<LessonDTO>> updateLesson(@PathVariable String id,
+            @RequestBody LessonDTO lessonDTO) {
         LessonDTO updated = lessonService.updateLesson(lessonDTO, id);
         APIResponse<LessonDTO> response = new APIResponse<>(
                 "success",
                 "Lesson updated successfully",
                 updated,
                 null,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
         return ResponseEntity.ok(response);
     }
 
-    //xóa lesson
+    // xóa lesson
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<Void>> deleteLesson(@PathVariable String id) {
         lessonService.deleteLesson(id);
@@ -127,8 +120,7 @@ public class LessonController {
                 "Lesson deleted successfully",
                 null,
                 null,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
 }

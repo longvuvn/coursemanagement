@@ -4,7 +4,6 @@ import com.example.coursemanagement.enums.RegistrationStatus;
 import com.example.coursemanagement.models.Course;
 import com.example.coursemanagement.models.Learner;
 import com.example.coursemanagement.models.Registration;
-import com.example.coursemanagement.models.dto.CourseDTO;
 import com.example.coursemanagement.models.dto.RegistrationDTO;
 import com.example.coursemanagement.repositories.CourseRepository;
 import com.example.coursemanagement.repositories.LearnerRepository;
@@ -70,18 +69,15 @@ public class RegisterServiceImpl implements RegistrationService {
         return registrationToRegistrationDTO(registrationRepository.save(existingRegistration));
     }
 
-
     @Override
     public void deleteRegistration(String id) {
         UUID uuid = UUID.fromString(id);
-        Registration  existingRegistration = registrationRepository.findById(uuid).orElse(null);
+        Registration existingRegistration = registrationRepository.findById(uuid).orElse(null);
         registrationRepository.delete(existingRegistration);
 
     }
 
-
-
-    public RegistrationDTO registrationToRegistrationDTO(Registration registration){
+    public RegistrationDTO registrationToRegistrationDTO(Registration registration) {
         RegistrationDTO dto = new RegistrationDTO();
         dto.setId(String.valueOf(registration.getId()));
         dto.setStatus(registration.getStatus().name());
