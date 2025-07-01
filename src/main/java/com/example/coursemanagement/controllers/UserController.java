@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class UserController {
 
     //lấy tất cả users
     @GetMapping
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<List<UserDTO>>> getAllUsers() {
         List<UserDTO> users = userService.getAllUsers();
         APIResponse<List<UserDTO>> response = new APIResponse<>(
@@ -35,6 +37,7 @@ public class UserController {
 
     // lấy user theo id
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<UserDTO>> getUserById(@PathVariable String id) {
         UserDTO user = userService.getUserById(id);
         APIResponse<UserDTO> response = new APIResponse<>(
@@ -49,6 +52,7 @@ public class UserController {
 
     //tạo user
     @PostMapping
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<UserDTO>> createUser(@Valid @RequestBody UserDTO userDTO) {
         UserDTO created = userService.CreateUser(userDTO);
         APIResponse<UserDTO> response = new APIResponse<>(
@@ -63,6 +67,7 @@ public class UserController {
 
     //chỉnh sửa user
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<UserDTO>> updateUser(@PathVariable String id, @RequestBody UserDTO userDTO) {
         UserDTO updated = userService.UpdateUser(userDTO, id);
         APIResponse<UserDTO> response = new APIResponse<>(
@@ -77,6 +82,7 @@ public class UserController {
 
     //xóa user
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<Void>> deleteUser(@PathVariable String id) {
         userService.DeleteUser(id);
         APIResponse<Void> response = new APIResponse<>(

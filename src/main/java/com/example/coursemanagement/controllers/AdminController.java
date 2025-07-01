@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +21,7 @@ public class AdminController {
 
     //lấy tất cả Admin
     @GetMapping()
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<List<AdminDTO>>> getAllAdmins() {
         List<AdminDTO> admins = adminService.getAllAdmins();
         APIResponse<List<AdminDTO>> response = new APIResponse<>(
@@ -33,6 +35,7 @@ public class AdminController {
 
     //lấy Admin theo id
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<AdminDTO>> getAdminById(@PathVariable String id) {
         AdminDTO admin = adminService.getAdminById(id);
         APIResponse<AdminDTO> response = new APIResponse<>(
@@ -59,6 +62,7 @@ public class AdminController {
 
     //chỉnh sửa Admin
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<AdminDTO>> updateUser(@PathVariable String id, @RequestBody AdminDTO adminDTO) {
         AdminDTO updated = adminService.updateAdmin(adminDTO, id);
         APIResponse<AdminDTO> response = new APIResponse<>(
@@ -72,6 +76,7 @@ public class AdminController {
 
     //Xóa Admin
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<Void>> deleteUser(@PathVariable String id) {
         adminService.deleteAdmin(id);
         APIResponse<Void> response = new APIResponse<>(

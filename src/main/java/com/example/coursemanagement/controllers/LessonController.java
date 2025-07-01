@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -86,6 +87,7 @@ public class LessonController {
 
     // tạo lesson
     @PostMapping
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<LessonDTO>> createLesson(@RequestBody LessonDTO lessonDTO) {
         LessonDTO created = lessonService.createLesson(lessonDTO);
         APIResponse<LessonDTO> response = new APIResponse<>(
