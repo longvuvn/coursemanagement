@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class LearnerController {
 
     //lấy tất cả learners
     @GetMapping()
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<List<LearnerDTO>>> getAllLearners() {
         List<LearnerDTO> learners = learnerService.getAllLearners();
         APIResponse<List<LearnerDTO>> response = new APIResponse<>(
@@ -37,6 +39,7 @@ public class LearnerController {
 
     //lấy learners theo Id
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<LearnerDTO>> getLearnerById(@PathVariable String id) {
         LearnerDTO learnerDTO = learnerService.getLearnerById(id);
         APIResponse<LearnerDTO> response = new APIResponse<>(
@@ -50,6 +53,7 @@ public class LearnerController {
 
     //lấy tất cả courses của learners
     @GetMapping("/{id}/courses")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<List<CourseDTO>>> getLearnersCourses(@PathVariable String id) {
         List<CourseDTO> courseDTOList = courseService.getCoursesByLearnerId(id);
         APIResponse<List<CourseDTO>> response = new APIResponse<>(
@@ -63,6 +67,7 @@ public class LearnerController {
 
     //tìm kiếm learners theo name
     @GetMapping("/search")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<List<LearnerDTO>>> searchLearner (@RequestParam String name){
         List<LearnerDTO> learnerDTO = learnerService.getLearnerByName(name);
         APIResponse<List<LearnerDTO>> response = new APIResponse<>(
@@ -76,6 +81,7 @@ public class LearnerController {
 
     //tạo learner
     @PostMapping()
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<LearnerDTO>> createLearner(@Valid @RequestBody LearnerDTO learnerDTO) throws Exception {
         LearnerDTO created = learnerService.createLearner(learnerDTO);
         APIResponse<LearnerDTO> response = new APIResponse<>(
@@ -89,6 +95,7 @@ public class LearnerController {
 
     //chỉnh sửa learner
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<LearnerDTO>> updateLearner(@PathVariable String id, @RequestBody LearnerDTO learnerDTO) {
         LearnerDTO updated = learnerService.updateLearner(learnerDTO, id);
         APIResponse<LearnerDTO> response = new APIResponse<>(
@@ -102,6 +109,7 @@ public class LearnerController {
 
     //xóa learner
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<Void>> deleteLearner(@PathVariable String id) {
         learnerService.deleteLearner(id);
         APIResponse<Void> response = new APIResponse<>(

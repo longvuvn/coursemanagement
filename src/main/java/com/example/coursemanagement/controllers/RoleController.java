@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class RoleController {
 
     //lấy tất cả roles
     @GetMapping
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<List<RoleDTO>>> getAllRoles() {
         List<RoleDTO> roles = roleService.getAllRoles();
         APIResponse<List<RoleDTO>> response = new APIResponse<>(
@@ -35,6 +37,7 @@ public class RoleController {
 
     //lấy role theo id
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<RoleDTO>> getRoleById(@PathVariable String id) {
         RoleDTO role = roleService.getRoleById(id);
         APIResponse<RoleDTO> response = new APIResponse<>(
@@ -49,6 +52,7 @@ public class RoleController {
 
     //tạo role
     @PostMapping
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<RoleDTO>> createRole(@RequestBody @Valid RoleDTO roleDTO) {
         RoleDTO created = roleService.createRole(roleDTO);
         APIResponse<RoleDTO> response = new APIResponse<>(
@@ -63,6 +67,7 @@ public class RoleController {
 
     //chỉnh sửa role
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<RoleDTO>> updateRole(@PathVariable String id, @RequestBody RoleDTO roleDTO) {
         RoleDTO updated = roleService.updateRole(roleDTO, id);
         APIResponse<RoleDTO> response = new APIResponse<>(
@@ -77,6 +82,7 @@ public class RoleController {
 
     //xóa role
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<Void>> deleteRole(@PathVariable String id) {
         roleService.deleteRole(id);
         APIResponse<Void> response = new APIResponse<>(

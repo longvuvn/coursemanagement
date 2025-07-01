@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -108,6 +109,7 @@ public class CourseController {
 
     //tạo course
     @PostMapping
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<CourseDTO>> createCourse(@Valid @RequestBody CourseDTO courseDTO) {
         CourseDTO created = courseService.createCourse(courseDTO);
         APIResponse<CourseDTO> response = new APIResponse<>(

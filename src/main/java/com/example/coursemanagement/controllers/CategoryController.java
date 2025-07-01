@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,7 @@ public class CategoryController {
 
     //lấy tất cả category
     @GetMapping
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<List<CategoryDTO>>> getAllCategories() {
         List<CategoryDTO> categories = categoryService.getAllCategories();
         APIResponse<List<CategoryDTO>> response = new APIResponse<>(
@@ -35,6 +37,7 @@ public class CategoryController {
 
     //lâ category theo id
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<CategoryDTO>> getCategoryById(@PathVariable String id) {
         CategoryDTO category = categoryService.getCategoryById(id);
         APIResponse<CategoryDTO> response = new APIResponse<>(
@@ -49,6 +52,7 @@ public class CategoryController {
 
     //tạo category
     @PostMapping
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<CategoryDTO>> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO created = categoryService.createCategory(categoryDTO);
         APIResponse<CategoryDTO> response = new APIResponse<>(
@@ -63,6 +67,7 @@ public class CategoryController {
 
     //chỉnh sửa category
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<CategoryDTO>> updateCategory(@PathVariable String id, @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO updated = categoryService.updateCategory(categoryDTO, id);
         APIResponse<CategoryDTO> response = new APIResponse<>(
@@ -77,6 +82,7 @@ public class CategoryController {
 
     //xóa category
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<Void>> deleteCategory(@PathVariable String id) {
         categoryService.deleteCategory(id);
         APIResponse<Void> response = new APIResponse<>(
