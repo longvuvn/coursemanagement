@@ -6,6 +6,7 @@ import com.example.coursemanagement.models.dto.UserDTO;
 import com.example.coursemanagement.repositories.UserRepository;
 import com.example.coursemanagement.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
@@ -17,29 +18,31 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private static final String DEFAULT_AVATAR_PATH = "/data/images/c21f969b5f03d33d43e04f8f136e7682.png";
     private final RoleServiceImpl roleService;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
-                .map(this::userToUserDTO)
+                .map(user -> modelMapper.map(user, UserDTO.class))
                 .collect(Collectors.toList());
     }
 
     @Override
     public UserDTO getUserById(String id) {
         UUID uuid = UUID.fromString(id);
-        Optional<User> user = userRepository.findById(uuid);
-        return user.map(this::userToUserDTO).orElse(null);
+        Optional<User> optionalUser  = userRepository.findById(uuid);
+        return optionalUser.map(user-> modelMapper.map(user, UserDTO.class)).orElse(null);
     }
 
     @Override
     public UserDTO CreateUser(UserDTO userDTO) {
-        User user = new User();
+        User user = modelMapper.map(userDTO, User.class);
         Instant now = Instant.now();
         if(userDTO.getAvatar() == null || userDTO.getAvatar().isEmpty()){
             userDTO.setAvatar(DEFAULT_AVATAR_PATH);
@@ -54,7 +57,7 @@ public class UserServiceImpl implements UserService {
         user.setStatus(UserStatus.ACTIVE);
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
-        return userToUserDTO(userRepository.save(user));
+        return modelMapper.map(userRepository.save(user), UserDTO.class);
     }
 
     @Override
@@ -69,7 +72,7 @@ public class UserServiceImpl implements UserService {
         existingUser.setStatus(UserStatus.valueOf(userDTO.getStatus()));
         User updatedUser = userRepository.save(existingUser);
         existingUser.setUpdatedAt(Instant.now());
-        return userToUserDTO(updatedUser);
+        return modelMapper.map(updatedUser, UserDTO.class);
     }
 
     @Override
@@ -77,20 +80,5 @@ public class UserServiceImpl implements UserService {
         UUID uuid = UUID.fromString(id);
         User existingUser = userRepository.findById(uuid).orElse(null);
         userRepository.delete(existingUser);
-    }
-
-    public UserDTO userToUserDTO(User user){
-        UserDTO dto = new UserDTO();
-        dto.setId(String.valueOf(user.getId()));
-        dto.setFullName(user.getFullName());
-        dto.setEmail(user.getEmail());
-        dto.setPhoneNumber(user.getPhoneNumber());
-        dto.setAvatar(user.getAvatar());
-        dto.setPassword(user.getPassword());
-        dto.setRoleName(user.getRole().getName());
-        dto.setStatus(user.getStatus().name());
-        dto.setCreatedAt(String.valueOf(user.getCreatedAt()));
-        dto.setUpdatedAt(String.valueOf(user.getUpdatedAt()));
-        return dto;
     }
 }

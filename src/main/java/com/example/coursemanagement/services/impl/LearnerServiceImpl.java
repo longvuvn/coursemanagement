@@ -10,6 +10,7 @@ import com.example.coursemanagement.repositories.RegistrationRepository;
 import com.example.coursemanagement.services.LearnerService;
 import com.example.coursemanagement.services.exceptions.error.DuplicateResourceException;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
@@ -21,30 +22,32 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class LearnerServiceImpl implements LearnerService {
+
     private final LearnerRepository learnerRepository;
     private static final String DEFAULT_AVATAR_PATH = "/data/images/c21f969b5f03d33d43e04f8f136e7682.png";
     private final RoleServiceImpl roleService;
     private final RegistrationRepository registrationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<LearnerDTO> getAllLearners() {
         List<Learner> learners = learnerRepository.findAll();
         return learners.stream()
-                .map(this::learnertoLearnerDTO)
+                .map(learner -> modelMapper.map(learner, LearnerDTO.class))
                 .collect(Collectors.toList());
     }
 
     @Override
     public LearnerDTO getLearnerById(String id) {
         UUID uuid = UUID.fromString(id);
-        Optional<Learner> learner = learnerRepository.findById(uuid);
-        return learner.map(this::learnertoLearnerDTO).orElse(null);
+        Optional<Learner> optionalLearner = learnerRepository.findById(uuid);
+        return optionalLearner.map(learner -> modelMapper.map(learner, LearnerDTO.class)).orElse(null);
     }
 
     @Override
     public LearnerDTO createLearner(LearnerDTO learnerDTO) {
-        Learner learner = new Learner();
+        Learner learner = modelMapper.map(learnerDTO, Learner.class);
         Instant now = Instant.now();
         Role role = roleService.getRoleByName("Learner");
         if (learnerDTO.getAvatar() == null || learnerDTO.getAvatar().isEmpty()) {
@@ -70,7 +73,7 @@ public class LearnerServiceImpl implements LearnerService {
         learner.setTotalCourses(0);
         learner.setCreatedAt(now);
         learner.setUpdatedAt(now);
-        return learnertoLearnerDTO(learnerRepository.save(learner));
+        return modelMapper.map(learnerRepository.save(learner), LearnerDTO.class);
     }
 
     @Override
@@ -88,7 +91,7 @@ public class LearnerServiceImpl implements LearnerService {
         existingLearner.setTotalCourses(learnerDTO.getTotalCourses());
         existingLearner.setRole(roleService.getRoleByName(learnerDTO.getRoleName()));
         existingLearner.setUpdatedAt(Instant.now());
-        return learnertoLearnerDTO(learnerRepository.save(existingLearner));
+        return modelMapper.map(learnerRepository.save(existingLearner), LearnerDTO.class);
     }
 
     @Override
@@ -115,7 +118,7 @@ public class LearnerServiceImpl implements LearnerService {
     public List<LearnerDTO> getLearnersByCourseId(String courseId) {
         List<Learner> learners = learnerRepository.findLearnsByCourseId(courseId);
         return learners.stream()
-                .map(this::learnertoLearnerDTO)
+                .map(learner -> modelMapper.map(learner, LearnerDTO.class) )
                 .collect(Collectors.toList());
     }
 
@@ -123,24 +126,7 @@ public class LearnerServiceImpl implements LearnerService {
     public List<LearnerDTO> getLearnerByName(String name) {
         List<Learner> learners = learnerRepository.findLearnerByName(name);
         return learners.stream()
-                .map(this::learnertoLearnerDTO)
+                .map(learner -> modelMapper.map(learner, LearnerDTO.class) )
                 .collect(Collectors.toList());
-    }
-
-    public LearnerDTO learnertoLearnerDTO(Learner learner) {
-        LearnerDTO dto = new LearnerDTO();
-        dto.setId(String.valueOf(learner.getId()));
-        dto.setFullName(learner.getFullName());
-        dto.setEmail(learner.getEmail());
-        dto.setPhoneNumber(learner.getPhoneNumber());
-        dto.setPassword(learner.getPassword());
-        dto.setAvatar(learner.getAvatar());
-        dto.setRoleName(learner.getRole().getName());
-        dto.setStatus(learner.getStatus().name());
-        dto.setTotalCourses(learner.getTotalCourses());
-        dto.setCreatedAt(String.valueOf(learner.getCreatedAt()));
-        dto.setUpdatedAt(String.valueOf(learner.getUpdatedAt()));
-        dto.setLevel(learner.getLevel());
-        return dto;
     }
 }

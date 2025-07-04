@@ -11,6 +11,7 @@ import com.example.coursemanagement.repositories.RegistrationRepository;
 import com.example.coursemanagement.services.LearnerService;
 import com.example.coursemanagement.services.RegistrationService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -26,20 +27,21 @@ public class RegisterServiceImpl implements RegistrationService {
     private final LearnerRepository learnerRepository;
     private final CourseRepository courseRepository;
     private final LearnerService learnerService;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<RegistrationDTO> getAllRegistrations() {
         List<Registration> registrations = registrationRepository.findAll();
         return registrations.stream()
-                .map(this::registrationToRegistrationDTO)
+                .map(registration -> modelMapper.map(registration, RegistrationDTO.class))
                 .collect(Collectors.toList());
     }
 
     @Override
     public RegistrationDTO getRegistrationById(String id) {
         UUID uuid = UUID.fromString(id);
-        Optional<Registration> registration = registrationRepository.findById(uuid);
-        return registration.map(this::registrationToRegistrationDTO).orElse(null);
+        Optional<Registration> optionalRegistration = registrationRepository.findById(uuid);
+        return optionalRegistration.map(registration -> modelMapper.map(registration, RegistrationDTO.class)).orElse(null);
     }
 
     @Override
@@ -50,7 +52,7 @@ public class RegisterServiceImpl implements RegistrationService {
         Learner learner = learnerRepository.findById(learnerId).orElse(null);
         Course course = courseRepository.findById(courseId).orElse(null);
 
-        Registration registration = new Registration();
+        Registration registration = modelMapper.map(registrationDTO, Registration.class);
         Instant now = Instant.now();
         registration.setLearner(learner);
         registration.setCourse(course);
@@ -58,7 +60,7 @@ public class RegisterServiceImpl implements RegistrationService {
         registration.setRegisteredAt(now);
         Registration saved = registrationRepository.save(registration);
         learnerService.updateTotalCourses(registrationDTO.getLearnerId());
-        return registrationToRegistrationDTO(saved);
+        return modelMapper.map(saved, RegistrationDTO.class);
     }
 
     @Override
@@ -66,7 +68,7 @@ public class RegisterServiceImpl implements RegistrationService {
         UUID uuid = UUID.fromString(id);
         Registration existingRegistration = registrationRepository.findById(uuid).orElse(null);
         existingRegistration.setStatus(RegistrationStatus.valueOf(registrationDTO.getStatus()));
-        return registrationToRegistrationDTO(registrationRepository.save(existingRegistration));
+        return modelMapper.map(registrationRepository.save(existingRegistration), RegistrationDTO.class);
     }
 
     @Override
@@ -75,17 +77,5 @@ public class RegisterServiceImpl implements RegistrationService {
         Registration existingRegistration = registrationRepository.findById(uuid).orElse(null);
         registrationRepository.delete(existingRegistration);
 
-    }
-
-    public RegistrationDTO registrationToRegistrationDTO(Registration registration) {
-        RegistrationDTO dto = new RegistrationDTO();
-        dto.setId(String.valueOf(registration.getId()));
-        dto.setStatus(registration.getStatus().name());
-        dto.setLearnerId(String.valueOf(registration.getLearner().getId()));
-        dto.setCourseId(String.valueOf(registration.getCourse().getId()));
-        dto.setLearnerName(registration.getLearner().getFullName());
-        dto.setCourseName(registration.getCourse().getTitle());
-        dto.setRegistrationAt(String.valueOf(registration.getRegisteredAt()));
-        return dto;
     }
 }

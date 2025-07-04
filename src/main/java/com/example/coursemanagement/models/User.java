@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -12,14 +13,14 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"user\"")
 @Data
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)// Mỗi class ánh xạ thành một bảng riêng, liên kết bằng JOIN qua khóa chính
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)
-    @Size(min = 3, max = 255)
+    @Size(min = 3, max = 255, message = "Tên phải từ 3 đến 255 ký tự")
     @NotBlank(message = "Tên không được để trống")
     private String fullName;
 
@@ -38,15 +39,19 @@ public class User {
     @Size(min = 8, max = 255, message = "Mật khẩu phải có ít nhất 8 kí tự")
     private String password;
 
-    @Size(min = 10, max = 10, message = "Số điện thoại phải có ít nhất 10 số")
     @NotBlank(message = "Số điện thoại không được để trống")
-    @Column(nullable = false)
+    @Pattern(regexp = "^\\d{10}$", message = "Số điện thoại phải đúng 10 chữ số")
+    @Column(nullable = false, unique = true)
     private String phoneNumber;
 
 
     private UserStatus status;
     private String avatar;
+
+    @CreatedDate
     private Instant createdAt;
+
+    @CreatedDate
     private Instant updatedAt;
 
     @ManyToOne

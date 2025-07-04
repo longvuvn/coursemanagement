@@ -11,6 +11,7 @@ import com.example.coursemanagement.repositories.ReviewRepository;
 import com.example.coursemanagement.services.CourseService;
 import com.example.coursemanagement.services.ReviewService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -27,25 +28,26 @@ public class ReviewServiceImpl implements ReviewService {
     private final CourseRepository courseRepository;
     private final LearnerRepository learnerRepository;
     private final CourseService courseService;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<ReviewDTO> getAllReviews() {
         List<Review> reviews = reviewRepository.findAll();
         return reviews.stream()
-                .map(this::reviewToReviewDTO)
+                .map(review -> modelMapper.map(review, ReviewDTO.class))
                 .collect(Collectors.toList());
     }
 
     @Override
     public ReviewDTO getReviewById(String id) {
         UUID uuid = UUID.fromString(id);
-        Optional<Review> review = reviewRepository.findById(uuid);
-        return review.map(this::reviewToReviewDTO).orElse(null);
+        Optional<Review> optionalReview = reviewRepository.findById(uuid);
+        return optionalReview.map(review -> modelMapper.map(review, ReviewDTO.class)).orElse(null);
     }
 
     @Override
     public ReviewDTO createReview(ReviewDTO reviewDTO) {
-        Review review = new Review();
+        Review review = modelMapper.map(reviewDTO, Review.class);
         UUID learner_Id = UUID.fromString(reviewDTO.getLearnerId());
         UUID course_Id = UUID.fromString(reviewDTO.getCourseId());
         Course course = courseRepository.findById(course_Id).orElse(null);
@@ -60,7 +62,7 @@ public class ReviewServiceImpl implements ReviewService {
         review.setUpdatedAt(now);
         Review saved = reviewRepository.save(review);
         courseService.updateTotalRating(String.valueOf(course.getId()));
-        return reviewToReviewDTO(saved);
+        return modelMapper.map(saved, ReviewDTO.class);
     }
 
     @Override
@@ -70,7 +72,7 @@ public class ReviewServiceImpl implements ReviewService {
         existingReview.setComment(reviewDTO.getComment());
         existingReview.setRating(Integer.parseInt(reviewDTO.getRating()));
         existingReview.setUpdatedAt(Instant.now());
-        return reviewToReviewDTO(reviewRepository.save(existingReview));
+        return modelMapper.map(reviewRepository.save(existingReview), ReviewDTO.class);
     }
 
     @Override
@@ -78,20 +80,5 @@ public class ReviewServiceImpl implements ReviewService {
         UUID uuid = UUID.fromString(id);
         Review existingReview = reviewRepository.findById(uuid).orElse(null);
         reviewRepository.delete(existingReview);
-    }
-
-    public ReviewDTO reviewToReviewDTO(Review review){
-        ReviewDTO dto = new ReviewDTO();
-        dto.setId(String.valueOf(review.getId()));
-        dto.setCourseId(String.valueOf(review.getCourse().getId()));
-        dto.setLearnerId(String.valueOf(review.getLearner().getId()));
-        dto.setCourseName(review.getCourse().getTitle());
-        dto.setLearnerName(review.getLearner().getFullName());
-        dto.setComment(review.getComment());
-        dto.setStatus(review.getStatus().name());
-        dto.setRating(String.valueOf(review.getRating()));
-        dto.setCreatedAt(String.valueOf(review.getCreatedAt()));
-        dto.setUpdatedAt(String.valueOf(review.getUpdatedAt()));
-        return dto;
     }
 }

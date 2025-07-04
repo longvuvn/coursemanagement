@@ -6,6 +6,7 @@ import com.example.coursemanagement.models.dto.RoleDTO;
 import com.example.coursemanagement.repositories.RoleRepository;
 import com.example.coursemanagement.services.RoleService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,28 +18,29 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<RoleDTO> getAllRoles() {
         List<Role> roles = roleRepository.findAll();
         return roles.stream()
-                .map(this::roleToRoleDTO)
+                .map(role -> modelMapper.map(role, RoleDTO.class))
                 .collect(Collectors.toList());
     }
 
     @Override
     public RoleDTO getRoleById(String id) {
         UUID uuid = UUID.fromString(id);
-        Optional<Role> role = roleRepository.findById(uuid);
-        return role.map(this::roleToRoleDTO).orElse(null);
+        Optional<Role> optionalRole = roleRepository.findById(uuid);
+        return optionalRole.map(role -> modelMapper.map(role, RoleDTO.class)).orElse(null);
     }
 
     @Override
     public RoleDTO createRole(RoleDTO roleDTO) {
-        Role role = new Role();
+        Role role = modelMapper.map(roleDTO, Role.class);
         role.setName(roleDTO.getName());
         role.setStatus(RoleStatus.ACTIVE);
-        return roleToRoleDTO(roleRepository.save(role));
+        return modelMapper.map(roleRepository.save(role), RoleDTO.class) ;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class RoleServiceImpl implements RoleService {
         existingRole.setName(roleDTO.getName());
         existingRole.setStatus(RoleStatus.valueOf(roleDTO.getStatus()));
         Role updatedRole = roleRepository.save(existingRole);
-        return roleToRoleDTO(updatedRole);
+        return modelMapper.map(updatedRole, RoleDTO.class);
     }
 
     @Override
@@ -62,13 +64,5 @@ public class RoleServiceImpl implements RoleService {
     public Role getRoleByName(String name) {
         Role role = roleRepository.findByName(name);
         return role;
-    }
-
-    public RoleDTO roleToRoleDTO(Role role){
-        RoleDTO dto = new RoleDTO();
-        dto.setId(String.valueOf(role.getId()));
-        dto.setName(role.getName());
-        dto.setStatus(role.getStatus().name());
-        return dto;
     }
 }

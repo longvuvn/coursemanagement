@@ -1,6 +1,6 @@
 package com.example.coursemanagement.models.dto;
 
-import jakarta.validation.constraints.Size;
+import com.example.coursemanagement.models.User;
 import lombok.Data;
 
 @Data
@@ -15,4 +15,8 @@ public class UserDTO {
     private String roleName;
     private String createdAt;
     private String updatedAt;
+
+//    public User toModel(){
+//
+//    }
 }
