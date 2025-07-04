@@ -10,6 +10,7 @@ import com.example.coursemanagement.repositories.OrderRepository;
 import com.example.coursemanagement.services.OrderDetailService;
 import com.example.coursemanagement.services.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
@@ -22,20 +23,21 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final LearnerRepository learnerRepository;
     private final OrderDetailService orderDetailService;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<OrderDTO> getAllOrders() {
         List<Order> orders = orderRepository.findAll();
         return orders.stream()
-                .map(this::orderToOrderDTO)
+                .map(order -> modelMapper.map(order, OrderDTO.class))
                 .toList();
     }
 
     @Override
     public OrderDTO getOrderById(String id) {
         UUID uuid = UUID.fromString(id);
-        Optional<Order> order = orderRepository.findById(uuid);
-        return order.map(this::orderToOrderDTO).orElse(null);
+        Optional<Order> optionalOrder = orderRepository.findById(uuid);
+        return optionalOrder.map(order -> modelMapper.map(order,OrderDTO.class)).orElse(null);
     }
 
     @Override
@@ -44,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
         UUID learnerId = UUID.fromString(orderDTO.getLearnerId());
         Learner learner = learnerRepository.findById(learnerId).orElse(null);
 
-        Order order = new Order();
+        Order order = modelMapper.map(orderDTO, Order.class);
         order.setStatus(OrderStatus.ACTIVE);
         order.setCreatedAt(now);
         order.setLearner(learner);
@@ -55,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
             orderDetailService.createOrderDetail(detailDTO);
         }
 
-        return orderToOrderDTO(savedOrder);
+        return modelMapper.map(savedOrder, OrderDTO.class);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class OrderServiceImpl implements OrderService {
         UUID uuid = UUID.fromString(id);
         Order existingOrder = orderRepository.findById(uuid).orElse(null);
         existingOrder.setStatus(OrderStatus.valueOf(orderDTO.getStatus()));
-        return orderToOrderDTO(orderRepository.save(existingOrder));
+        return modelMapper.map(orderRepository.save(existingOrder), OrderDTO.class);
     }
 
     @Override
@@ -71,20 +73,5 @@ public class OrderServiceImpl implements OrderService {
         UUID uuid = UUID.fromString(id);
         Order existingOrder = orderRepository.findById(uuid).orElse(null);
         orderRepository.delete(existingOrder);
-    }
-
-    public OrderDTO orderToOrderDTO(Order order) {
-        OrderDTO dto = new OrderDTO();
-        dto.setId(String.valueOf(order.getId()));
-        dto.setCreatedAt(String.valueOf(order.getCreatedAt()));
-        dto.setStatus(order.getStatus().name());
-        List<OrderDetailDTO> detailDTO = orderDetailService.getOrderDetailsByOrderId(order.getId().toString());
-        if (detailDTO != null && !detailDTO.isEmpty()) {
-            dto.setOrderDetail(detailDTO.get(0));
-        } else {
-            dto.setOrderDetail(null);
-        }
-        dto.setLearnerId(String.valueOf(order.getLearner().getId()));
-        return dto;
     }
 }

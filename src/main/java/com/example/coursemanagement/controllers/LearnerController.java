@@ -5,6 +5,7 @@ import com.example.coursemanagement.models.dto.CourseDTO;
 import com.example.coursemanagement.models.dto.LearnerDTO;
 import com.example.coursemanagement.services.CourseService;
 import com.example.coursemanagement.services.LearnerService;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -82,7 +83,7 @@ public class LearnerController {
     //tạo learner
     @PostMapping()
     @PreAuthorize("hasRole('Admin')")
-    public ResponseEntity<APIResponse<LearnerDTO>> createLearner(@Valid @RequestBody LearnerDTO learnerDTO) throws Exception {
+    public ResponseEntity<APIResponse<LearnerDTO>> createLearner(@Valid @RequestBody LearnerDTO learnerDTO) {
         LearnerDTO created = learnerService.createLearner(learnerDTO);
         APIResponse<LearnerDTO> response = new APIResponse<>(
                 "success",

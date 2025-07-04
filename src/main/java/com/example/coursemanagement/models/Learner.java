@@ -1,16 +1,16 @@
 package com.example.coursemanagement.models;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import java.util.Set;
+import lombok.*;
 
+import java.util.Set;
 
 @Entity
 @Table(name = "\"learner\"")
-@Data
-@PrimaryKeyJoinColumn(name = "id")
+@Getter
+@Setter
+@PrimaryKeyJoinColumn(name = "id")// Chỉ định khóa chính của bảng con là khóa ngoại liên kết với bảng cha
 public class Learner extends User {
-
 
     @Column(nullable = false)
     private int totalCourses;

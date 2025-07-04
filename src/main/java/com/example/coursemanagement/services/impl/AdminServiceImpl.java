@@ -9,6 +9,7 @@ import com.example.coursemanagement.services.AdminService;
 import com.example.coursemanagement.services.exceptions.error.DuplicateResourceException;
 import com.example.coursemanagement.services.exceptions.error.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,50 +27,39 @@ public class AdminServiceImpl implements AdminService {
     private static final String DEFAULT_AVATAR_PATH = "/data/images/c21f969b5f03d33d43e04f8f136e7682.png";
     private final RoleServiceImpl roleService;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<AdminDTO> getAllAdmins() {
         List<Admin> admins = adminRepository.findAll();
         return admins.stream()
-                .map(this::adminToAdminDTO)
+                .map(admin -> modelMapper.map(admin, AdminDTO.class) )
                 .collect(Collectors.toList());
     }
 
     @Override
     public AdminDTO getAdminById(String id) {
         UUID uuid = UUID.fromString(id);
-        Optional<Admin> admin = adminRepository.findById(uuid);
-        return admin.map(this::adminToAdminDTO).orElse(null);
+        Optional<Admin> optionalAdmin = adminRepository.findById(uuid);
+        return optionalAdmin.map(admin -> modelMapper.map(admin, AdminDTO.class)).orElse(null);
     }
 
     @Override
     public AdminDTO createAdmin(AdminDTO adminDTO) {
-        Admin admin = new Admin();
+        Admin admin = modelMapper.map(adminDTO, Admin.class);
         Instant now = Instant.now();
         Role role = roleService.getRoleByName("Admin");
         if(adminDTO.getAvatar() == null || adminDTO.getAvatar().isEmpty()){
             adminDTO.setAvatar(DEFAULT_AVATAR_PATH);
         }
-        if (adminDTO.getEmail() == null || adminDTO.getEmail().trim().isEmpty()) {
-            throw new ValidationException("Email không được để trống");
-        }
         if (adminRepository.existsByEmail(adminDTO.getEmail().trim())) {
             throw new DuplicateResourceException("Email đã tồn tại");
-        }
-        if(adminDTO.getFullName() == null || adminDTO.getFullName().trim().isEmpty()){
-            throw new ValidationException("Tên người dùng không được để trống");
         }
         if(adminRepository.existsByFullName(adminDTO.getFullName().trim())){
             throw new DuplicateResourceException("Tên người dùng đã được sử dụng");
         }
-        if(adminDTO.getPhoneNumber() == null || adminDTO.getPhoneNumber().trim().isEmpty()){
-            throw new ValidationException("Số điện thoại không được để trống");
-        }
         if(adminRepository.existsByPhoneNumber(adminDTO.getPhoneNumber().trim())){
             throw new DuplicateResourceException("Số điện thoại đã được sử dụng");
-        }
-        if(adminDTO.getPassword() == null || adminDTO.getPassword().trim().isEmpty()){
-            throw new ValidationException("Vui lòng nhập mật khẩu");
         }
         admin.setFullName(adminDTO.getFullName());
         admin.setEmail(adminDTO.getEmail());
@@ -81,7 +71,7 @@ public class AdminServiceImpl implements AdminService {
         admin.setCreatedAt(now);
         admin.setUpdatedAt(now);
         admin.setDepartment(adminDTO.getDepartment());
-        return adminToAdminDTO(adminRepository.save(admin));
+        return modelMapper.map(adminRepository.save(admin), AdminDTO.class);
     }
 
     @Override
@@ -96,7 +86,7 @@ public class AdminServiceImpl implements AdminService {
         existingAdmin.setDepartment(adminDTO.getDepartment());
         existingAdmin.setStatus(UserStatus.valueOf(adminDTO.getStatus()));
         existingAdmin.setUpdatedAt(Instant.now());
-        return adminToAdminDTO(adminRepository.save(existingAdmin));
+        return modelMapper.map(adminRepository.save(existingAdmin), AdminDTO.class);
     }
 
     @Override
@@ -104,21 +94,5 @@ public class AdminServiceImpl implements AdminService {
         UUID uuid = UUID.fromString(id);
         Admin existingAdmin = adminRepository.findById(uuid).orElse(null);
         adminRepository.delete(existingAdmin);
-    }
-
-    public AdminDTO adminToAdminDTO(Admin admin){
-        AdminDTO dto = new AdminDTO();
-        dto.setId(String.valueOf(admin.getId()));
-        dto.setFullName(admin.getFullName());
-        dto.setEmail(admin.getEmail());
-        dto.setPhoneNumber(admin.getPhoneNumber());
-        dto.setPassword(admin.getPassword());
-        dto.setAvatar(admin.getAvatar());
-        dto.setRoleName(admin.getRole().getName());
-        dto.setStatus(admin.getStatus().name());
-        dto.setCreatedAt(String.valueOf(admin.getCreatedAt()));
-        dto.setUpdatedAt(String.valueOf(admin.getUpdatedAt()));
-        dto.setDepartment(admin.getDepartment());
-        return dto;
     }
 }

@@ -11,6 +11,7 @@ import com.example.coursemanagement.repositories.ReviewRepository;
 import com.example.coursemanagement.services.ChapterService;
 import com.example.coursemanagement.services.CourseService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -28,20 +29,21 @@ public class CourseServiceImpl implements CourseService {
     private final CategoryRepository categoryRepository;
     private final ChapterService chapterService;
     private final ReviewRepository reviewRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<CourseDTO> getAllCourses() {
         List<Course> courses = courseRepository.findAll();
         return courses.stream()
-                .map(this::courseTOCourseDTO)
+                .map(course -> modelMapper.map(course, CourseDTO.class) )
                 .collect(Collectors.toList());
     }
 
     @Override
     public CourseDTO getCourseById(String id) {
         UUID uuid = UUID.fromString(id);
-        Optional<Course> course = courseRepository.findById(uuid);
-        CourseDTO courseDTO = course.map(this::courseTOCourseDTO).orElse(null);
+        Optional<Course> optionalCourse = courseRepository.findById(uuid);
+        CourseDTO courseDTO = optionalCourse.map(course -> modelMapper.map(course, CourseDTO.class)).orElse(null);
         List<ChapterDTO> chapterDTO = chapterService.getChaptersByCourseId(uuid.toString());
         courseDTO.setChapters(chapterDTO);
         return courseDTO;
@@ -49,7 +51,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDTO createCourse(CourseDTO courseDTO) {
-        Course course = new Course();
+        Course course = modelMapper.map(courseDTO, Course.class);
         Instant now = Instant.now();
         Category category = categoryRepository.findByName(courseDTO.getCategoryName());
         course.setTitle(courseDTO.getTitle());
@@ -63,7 +65,7 @@ public class CourseServiceImpl implements CourseService {
         course.setCreatedAt(now);
         course.setUpdatedAt(now);
         Course savedCourse = courseRepository.save(course);
-        return courseTOCourseDTO(savedCourse);
+        return modelMapper.map(savedCourse, CourseDTO.class);
     }
 
     @Override
@@ -79,7 +81,7 @@ public class CourseServiceImpl implements CourseService {
         existingCourse.setStatus(CourseStatus.valueOf(courseDTO.getStatus()));
         existingCourse.setTotalReviews(courseDTO.getTotalReviews());
         existingCourse.setUpdatedAt(Instant.now());
-        return courseTOCourseDTO(courseRepository.save(existingCourse));
+        return modelMapper.map(courseRepository.save(existingCourse), CourseDTO.class);
     }
 
     @Override
@@ -99,14 +101,14 @@ public class CourseServiceImpl implements CourseService {
         course.setTotalReviews(totalReviews);
         course.setAverageRating(totalReviews == 0 ? 0.0 : (double) totalRating / totalReviews);
         courseRepository.save(course);
-        return courseTOCourseDTO(course);
+        return modelMapper.map(course, CourseDTO.class);
 
     }
     @Override
     public List<CourseDTO> getCoursesByLearnerId(String learnerId) {
         List<Course> courseList = courseRepository.findCoursesByLearnerId(learnerId);
         return courseList.stream()
-                .map(this:: courseTOCourseDTO)
+                .map(course -> modelMapper.map(course, CourseDTO.class) )
                 .collect(Collectors.toList());
     }
 
@@ -114,7 +116,7 @@ public class CourseServiceImpl implements CourseService {
     public List<CourseDTO> getCoursesByTitle(String title) {
         List<Course> courseList = courseRepository.findCourseByTitle(title);
         return courseList.stream()
-                .map(this:: courseTOCourseDTO)
+                .map(course -> modelMapper.map(course, CourseDTO.class) )
                 .collect(Collectors.toList());
     }
 
@@ -122,7 +124,7 @@ public class CourseServiceImpl implements CourseService {
     public List<CourseDTO> getLatestCourses() {
         List<Course> courseList = courseRepository.findLatestCourses();
         return courseList.stream()
-                .map(this:: courseTOCourseDTO)
+                .map(course -> modelMapper.map(course, CourseDTO.class) )
                 .collect(Collectors.toList());
     }
 
@@ -130,29 +132,7 @@ public class CourseServiceImpl implements CourseService {
     public List<CourseDTO> getOldestCourses() {
         List<Course> courseList = courseRepository.findOldestCourses();
         return courseList.stream()
-                .map(this:: courseTOCourseDTO)
+                .map(course -> modelMapper.map(course, CourseDTO.class) )
                 .collect(Collectors.toList());
-    }
-
-    public CourseDTO courseTOCourseDTO(Course course) {
-        CourseDTO dto = new CourseDTO();
-        dto.setId(String.valueOf(course.getId()));
-        dto.setTitle(course.getTitle());
-        dto.setCategoryName(course.getCategory().getName());
-        dto.setDescription(course.getDescription());
-        dto.setStatus(course.getStatus().name());
-        dto.setPrice(String.valueOf(course.getPrice()));
-        dto.setImage(course.getImage());
-        dto.setTotalReviews(course.getTotalReviews());
-        List<ChapterDTO> chapters = chapterService.getChaptersByCourseId(String.valueOf(course.getId()));
-        if (chapters != null && !chapters.isEmpty()) {
-            dto.setChapters(new ArrayList<>());
-        } else {
-            dto.setChapters(null);
-        }
-        dto.setAverageRating(course.getAverageRating() == null ? 0 : course.getAverageRating());
-        dto.setCreatedAt(String.valueOf(course.getCreatedAt()));
-        dto.setUpdatedAt(String.valueOf(course.getUpdatedAt()));
-        return dto;
     }
 }

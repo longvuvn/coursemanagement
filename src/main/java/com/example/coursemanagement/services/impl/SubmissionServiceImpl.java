@@ -10,6 +10,7 @@ import com.example.coursemanagement.repositories.LessonRepository;
 import com.example.coursemanagement.repositories.SubmissionRepository;
 import com.example.coursemanagement.services.SubmissionService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -24,20 +25,21 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final SubmissionRepository submissionRepository;
     private final LearnerRepository learnerRepository;
     private final LessonRepository lessonRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<SubmissionDTO> getAllSubmissions() {
         List<Submission> submissions = submissionRepository.findAll();
         return submissions.stream()
-                .map(this::submissionToSubmissionDTO)
+                .map(submission -> modelMapper.map(submission, SubmissionDTO.class))
                 .collect(Collectors.toList());
     }
 
     @Override
     public SubmissionDTO getSubmissionById(String id) {
         UUID uuid = UUID.fromString(id);
-        Optional<Submission> submission = submissionRepository.findById(uuid);
-        return submission.map(this::submissionToSubmissionDTO).orElse(null);
+        Optional<Submission> optionalSubmission = submissionRepository.findById(uuid);
+        return optionalSubmission.map(submission -> modelMapper.map(submission, SubmissionDTO.class)).orElse(null);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         Learner learner = learnerRepository.findById(learnerId).orElse(null);
         Lesson lesson = lessonRepository.findById(lessonId).orElse(null);
 
-        Submission submission = new Submission();
+        Submission submission = modelMapper.map(submissionDTO, Submission.class);
         Instant now = Instant.now();
         submission.setFile_Url(submissionDTO.getFile_Url());
         submission.setStatus(SubmisstionStatus.PENDING);
@@ -57,7 +59,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         submission.setSubmittedAt(now);
         submission.setScore(null);
 
-        return submissionToSubmissionDTO(submissionRepository.save(submission));
+        return modelMapper.map(submissionRepository.save(submission), SubmissionDTO.class);
     }
 
     @Override
@@ -67,7 +69,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         existingSubmission.setFile_Url(submissionDTO.getFile_Url());
         existingSubmission.setStatus(SubmisstionStatus.valueOf(submissionDTO.getStatus()));
         existingSubmission.setSubmittedAt(Instant.now());
-        return submissionToSubmissionDTO(submissionRepository.save(existingSubmission));
+        return modelMapper.map(submissionRepository.save(existingSubmission), SubmissionDTO.class);
 
     }
 
@@ -83,20 +85,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         UUID uuid = UUID.fromString(lessonIdd);
         List<Submission> submissions = submissionRepository.getSubmissionByLessonId(uuid);
         return submissions.stream()
-                .map(this::submissionToSubmissionDTO)
+                .map(submission -> modelMapper.map(submission, SubmissionDTO.class))
                 .collect(Collectors.toList());
-    }
-
-    public SubmissionDTO submissionToSubmissionDTO(Submission submission){
-        SubmissionDTO dto = new SubmissionDTO();
-        dto.setId(String.valueOf(submission.getId()));
-        dto.setStatus(submission.getStatus().name());
-        dto.setLearnerId(String.valueOf(submission.getLearner().getId()));
-        dto.setLessonId(String.valueOf(submission.getLesson().getId()));
-        dto.setLearnerName(submission.getLearner().getFullName());
-        dto.setLessonName(submission.getLesson().getTitle());
-        dto.setFile_Url(submission.getFile_Url());
-        dto.setSubmissionAt(String.valueOf(submission.getSubmittedAt()));
-        return dto;
     }
 }

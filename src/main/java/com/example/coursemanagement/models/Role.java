@@ -25,5 +25,5 @@ public class Role {
     private RoleStatus status;
 
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
-    private Set<User> user;
+    private Set<User> users;
 }

@@ -10,6 +10,7 @@ import com.example.coursemanagement.repositories.LessonRepository;
 import com.example.coursemanagement.services.LessonService;
 import com.example.coursemanagement.services.SubmissionService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -26,20 +27,21 @@ public class LessonServiceImpl implements LessonService {
     private final LessonRepository lessonRepository;
     private final ChapterRepository chapterRepository;
     private final SubmissionService submissionService;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<LessonDTO> getAllLessons() {
         List<Lesson> lessons = lessonRepository.findAll();
         return lessons.stream()
-                .map(this::lessonToLessonDTO)
+                .map(lesson -> modelMapper.map(lesson, LessonDTO.class) )
                 .collect(Collectors.toList());
     }
 
     @Override
     public LessonDTO getLessonById(String id) {
         UUID uuid = UUID.fromString(id);
-        Optional<Lesson> lesson = lessonRepository.findById(uuid);
-        LessonDTO lessonDTO = lesson.map(this::lessonToLessonDTO).orElse(null);
+        Optional<Lesson> optionalLesson = lessonRepository.findById(uuid);
+        LessonDTO lessonDTO = optionalLesson.map(lesson -> modelMapper.map(lesson, LessonDTO.class)).orElse(null);
         List<SubmissionDTO> submissionDTOS = submissionService.getSubmissionsByLessonId(uuid.toString());
         lessonDTO.setSubmissions(submissionDTOS);
         return lessonDTO;
@@ -49,7 +51,7 @@ public class LessonServiceImpl implements LessonService {
     public LessonDTO createLesson(LessonDTO lessonDTO) {
         UUID uuid = UUID.fromString(lessonDTO.getChapterId());
         Chapter chapter = chapterRepository.findById(uuid).orElse(null);
-        Lesson lesson = new Lesson();
+        Lesson lesson = modelMapper.map(lessonDTO, Lesson.class);
         Instant now = Instant.now();
         lesson.setTitle(lessonDTO.getTitle());
         lesson.setStatus(LessonStatus.ACTIVE);
@@ -58,7 +60,7 @@ public class LessonServiceImpl implements LessonService {
         lesson.setReferenceLink(lessonDTO.getReferenceLink());
         lesson.setCreatedAt(now);
         lesson.setUpdatedAt(now);
-        return lessonToLessonDTO(lessonRepository.save(lesson));
+        return modelMapper.map(lessonRepository.save(lesson), LessonDTO.class);
     }
 
     @Override
@@ -70,7 +72,7 @@ public class LessonServiceImpl implements LessonService {
         existingLesson.setContent(lessonDTO.getContent());
         existingLesson.setReferenceLink(lessonDTO.getReferenceLink());
         existingLesson.setUpdatedAt(Instant.now());
-        return lessonToLessonDTO(lessonRepository.save(existingLesson));
+        return modelMapper.map(lessonRepository.save(existingLesson), LessonDTO.class);
     }
 
     @Override
@@ -85,7 +87,7 @@ public class LessonServiceImpl implements LessonService {
         UUID uuid = UUID.fromString(chapterId);
         List<Lesson> lessons = lessonRepository.getLessonsByChapterId(uuid);
         return lessons.stream()
-                .map(this::lessonToLessonDTO)
+                .map(lesson -> modelMapper.map(lesson, LessonDTO.class) )
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +95,7 @@ public class LessonServiceImpl implements LessonService {
     public List<LessonDTO> getLessonsByTitle(String title) {
         List<Lesson> lessonList = lessonRepository.findLessonByTitle(title);
         return lessonList.stream()
-                .map(this::lessonToLessonDTO)
+                .map(lesson -> modelMapper.map(lesson, LessonDTO.class) )
                 .collect(Collectors.toList());
     }
 
@@ -101,7 +103,7 @@ public class LessonServiceImpl implements LessonService {
     public List<LessonDTO> getLatestLessons() {
         List<Lesson> lessonList = lessonRepository.findLatestLessons();
         return lessonList.stream()
-                .map(this::lessonToLessonDTO)
+                .map(lesson -> modelMapper.map(lesson, LessonDTO.class))
                 .collect(Collectors.toList());
     }
 
@@ -109,26 +111,7 @@ public class LessonServiceImpl implements LessonService {
     public List<LessonDTO> getOldestLessons() {
         List<Lesson> lessonList = lessonRepository.findOldestLessons();
         return lessonList.stream()
-                .map(this::lessonToLessonDTO)
+                .map(lesson -> modelMapper.map(lesson, LessonDTO.class) )
                 .collect(Collectors.toList());
-    }
-
-    public LessonDTO lessonToLessonDTO(Lesson lesson){
-        LessonDTO dto = new LessonDTO();
-        dto.setId(String.valueOf(lesson.getId()));
-        dto.setTitle(lesson.getTitle());
-        dto.setChapterId(String.valueOf(lesson.getChapter().getId()));
-        dto.setReferenceLink(lesson.getReferenceLink());
-        dto.setContent(lesson.getContent());
-        List<SubmissionDTO> submissionDTOS = submissionService.getSubmissionsByLessonId(String.valueOf(lesson.getId()));
-        if (submissionDTOS != null && !submissionDTOS.isEmpty()) {
-            dto.setSubmissions(new ArrayList<>());
-        }else {
-            dto.setSubmissions(null);
-        }
-        dto.setStatus(lesson.getStatus().name());
-        dto.setCreatedAt(String.valueOf(lesson.getCreatedAt()));
-        dto.setUpdatedAt(String.valueOf(lesson.getUpdatedAt()));
-        return dto;
     }
 }
