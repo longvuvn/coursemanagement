@@ -14,7 +14,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"chapter\"")
 @Data
+
 @EntityListeners(AuditingEntityListener.class)
+
 public class Chapter extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

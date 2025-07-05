@@ -3,18 +3,15 @@ package com.example.coursemanagement.models;
 import com.example.coursemanagement.enums.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-
 import lombok.Data;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Table(name = "\"user\"")
 @Data
 @Inheritance(strategy = InheritanceType.JOINED)
-@EntityListeners(AuditingEntityListener.class)
+
 public class User extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -45,7 +42,6 @@ public class User extends Auditing{
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
-    @Enumerated(EnumType.STRING)
     private UserStatus status;
     private String avatar;
 

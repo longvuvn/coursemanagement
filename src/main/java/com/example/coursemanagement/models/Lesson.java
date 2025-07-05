@@ -14,6 +14,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"lesson\"")
 @Data
+
+
 @EntityListeners(AuditingEntityListener.class)
 public class Lesson extends Auditing{
     @Id
@@ -33,6 +35,7 @@ public class Lesson extends Auditing{
     private String referenceLink;
 
     private String content;
+
 
     @ManyToOne
     @JoinColumn(name = "chapter_id")

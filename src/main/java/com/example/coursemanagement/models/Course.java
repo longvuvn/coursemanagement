@@ -16,7 +16,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"course\"")
 @Data
+
 @EntityListeners(AuditingEntityListener.class)
+
 public class Course extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -54,9 +54,7 @@ public class LearnerServiceImpl implements LearnerService {
         }
         if (learnerRepository.existsByEmail(learnerDTO.getEmail().trim())) {
             throw new DuplicateResourceException("Email không hợp lệ");
-        }
-        if (learnerRepository.existsByFullName(learnerDTO.getFullName().trim())) {
-            throw new DuplicateResourceException("Tên người dùng không hợp lệ");
+
         }
         if (learnerRepository.existsByPhoneNumber(learnerDTO.getPhoneNumber().trim())) {
             throw new DuplicateResourceException("Số điện thoại không hợp lệ");
@@ -111,7 +109,7 @@ public class LearnerServiceImpl implements LearnerService {
     }
 
     @Override
-    public List<LearnerDTO> getLearnersByCourseId(String courseId) {
+    public List<LearnerDTO> getLearnersByCourseId(UUID courseId) {
         List<Learner> learners = learnerRepository.findLearnsByCourseId(courseId);
         return learners.stream()
                 .map(learner -> modelMapper.map(learner, LearnerDTO.class) )

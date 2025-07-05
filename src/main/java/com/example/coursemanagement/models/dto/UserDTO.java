@@ -16,7 +16,4 @@ public class UserDTO {
     private String createdAt;
     private String updatedAt;
 
-//    public User toModel(){
-//
-//    }
 }

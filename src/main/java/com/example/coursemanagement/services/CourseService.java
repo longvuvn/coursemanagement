@@ -3,6 +3,7 @@ package com.example.coursemanagement.services;
 import com.example.coursemanagement.models.dto.CourseDTO;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CourseService {
     List<CourseDTO> getAllCourses();
@@ -11,7 +12,7 @@ public interface CourseService {
     CourseDTO updateCourse(CourseDTO courseDTO, String id);
     CourseDTO updateTotalRating (String courseId);
     void deleteCourse(String id);
-    List<CourseDTO> getCoursesByLearnerId(String learnerId);
+    List<CourseDTO> getCoursesByLearnerId(UUID learnerId);
     List<CourseDTO> getCoursesByTitle(String title);
     List<CourseDTO> getLatestCourses();
     List<CourseDTO> getOldestCourses();

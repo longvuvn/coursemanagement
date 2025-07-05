@@ -26,7 +26,6 @@ public class Submission {
 
     private Instant SubmittedAt;
 
-    @Enumerated(EnumType.STRING)
     private SubmisstionStatus status;
 
     @ManyToOne

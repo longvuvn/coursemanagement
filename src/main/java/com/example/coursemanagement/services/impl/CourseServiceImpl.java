@@ -101,7 +101,7 @@ public class CourseServiceImpl implements CourseService {
 
     }
     @Override
-    public List<CourseDTO> getCoursesByLearnerId(String learnerId) {
+    public List<CourseDTO> getCoursesByLearnerId(UUID learnerId) {
         List<Course> courseList = courseRepository.findCoursesByLearnerId(learnerId);
         return courseList.stream()
                 .map(course -> modelMapper.map(course, CourseDTO.class) )

@@ -25,6 +25,5 @@ public class Registration {
     private Course course;
     private Instant RegisteredAt;
 
-    @Enumerated(EnumType.STRING)
     private RegistrationStatus status;
 }
