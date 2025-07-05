@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.UUID;
 
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
+
     @Query("SELECT SUM(r.rating) FROM Review r WHERE r.course.id = :courseId")
     int sumRatingByCourseId(@Param("courseId") UUID courseId);
 

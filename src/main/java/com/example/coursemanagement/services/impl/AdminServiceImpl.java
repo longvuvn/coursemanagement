@@ -53,13 +53,11 @@ public class AdminServiceImpl implements AdminService {
             adminDTO.setAvatar(DEFAULT_AVATAR_PATH);
         }
         if (adminRepository.existsByEmail(adminDTO.getEmail().trim())) {
-            throw new DuplicateResourceException("Email đã tồn tại");
+            throw new DuplicateResourceException("Email không hợp lệ");
         }
-        if(adminRepository.existsByFullName(adminDTO.getFullName().trim())){
-            throw new DuplicateResourceException("Tên người dùng đã được sử dụng");
-        }
+
         if(adminRepository.existsByPhoneNumber(adminDTO.getPhoneNumber().trim())){
-            throw new DuplicateResourceException("Số điện thoại đã được sử dụng");
+            throw new DuplicateResourceException("Số điện thoại không hợp lệ");
         }
         admin.setFullName(adminDTO.getFullName());
         admin.setEmail(adminDTO.getEmail());

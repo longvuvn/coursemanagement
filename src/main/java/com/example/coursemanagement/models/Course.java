@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"course\"")
 @Data
-public class Course {
+public class Course extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -44,9 +45,6 @@ public class Course {
 
     @Column(nullable = false)
     private Integer totalReviews;
-
-    private Instant createdAt;
-    private Instant updatedAt;
 
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     private Set<Review> review;

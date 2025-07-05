@@ -16,30 +16,33 @@ public class GlobalException {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorMessage> handleBadRequestException(BadRequestException e) {
-        LocalDateTime now = LocalDateTime.now();
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setStatusCode(HttpStatus.BAD_REQUEST.value());
         errorMessage.setMessage(e.getMessage());
-        errorMessage.setTimestamp(now);
+        errorMessage.setTimestamp(LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ErrorMessage> handleDuplicateResourceException(DuplicateResourceException e) {
-        LocalDateTime now = LocalDateTime.now();
+    public ResponseEntity<APIResponse<ErrorMessage>> handleDuplicateResourceException(DuplicateResourceException e) {
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setMessage(e.getMessage());
-        errorMessage.setTimestamp(now);
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
+        errorMessage.setTimestamp(LocalDateTime.now());
+
+        APIResponse<ErrorMessage> response = new APIResponse<>();
+        response.setStatus(String.valueOf(409));
+        response.setMessage("Tài nguyên bị trùng");
+        response.setData(errorMessage);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ErrorMessage> handleForbiddenException(ForbiddenException e) {
-        LocalDateTime now = LocalDateTime.now();
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setStatusCode(HttpStatus.FORBIDDEN.value());
         errorMessage.setMessage(e.getMessage());
-        errorMessage.setTimestamp(now);
+        errorMessage.setTimestamp(LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorMessage);
     }
 

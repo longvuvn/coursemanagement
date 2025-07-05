@@ -24,6 +24,7 @@ public class Submission {
 
 
     private Instant SubmittedAt;
+
     private SubmisstionStatus status;
 
     @ManyToOne

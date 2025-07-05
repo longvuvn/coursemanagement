@@ -24,5 +24,6 @@ public class Registration {
     @JoinColumn(name = "course_id")
     private Course course;
     private Instant RegisteredAt;
+
     private RegistrationStatus status;
 }

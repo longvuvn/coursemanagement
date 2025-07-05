@@ -52,14 +52,11 @@ public class ReviewServiceImpl implements ReviewService {
         UUID course_Id = UUID.fromString(reviewDTO.getCourseId());
         Course course = courseRepository.findById(course_Id).orElse(null);
         Learner learner = learnerRepository.findById(learner_Id).orElse(null);
-        Instant now = Instant.now();
         review.setComment(reviewDTO.getComment());
         review.setRating(Integer.parseInt(reviewDTO.getRating()));
         review.setLearner(learner);
         review.setStatus(ReviewStatus.APPROVED);
         review.setCourse(course);
-        review.setCreatedAt(now);
-        review.setUpdatedAt(now);
         Review saved = reviewRepository.save(review);
         courseService.updateTotalRating(String.valueOf(course.getId()));
         return modelMapper.map(saved, ReviewDTO.class);
@@ -71,7 +68,6 @@ public class ReviewServiceImpl implements ReviewService {
         Review existingReview = reviewRepository.findById(uuid).orElse(null);
         existingReview.setComment(reviewDTO.getComment());
         existingReview.setRating(Integer.parseInt(reviewDTO.getRating()));
-        existingReview.setUpdatedAt(Instant.now());
         return modelMapper.map(reviewRepository.save(existingReview), ReviewDTO.class);
     }
 

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/learners")
@@ -54,8 +55,7 @@ public class LearnerController {
 
     //lấy tất cả courses của learners
     @GetMapping("/{id}/courses")
-    @PreAuthorize("hasRole('Admin')")
-    public ResponseEntity<APIResponse<List<CourseDTO>>> getLearnersCourses(@PathVariable String id) {
+    public ResponseEntity<APIResponse<List<CourseDTO>>> getLearnersCourses(@PathVariable UUID id) {
         List<CourseDTO> courseDTOList = courseService.getCoursesByLearnerId(id);
         APIResponse<List<CourseDTO>> response = new APIResponse<>(
                 "success",
@@ -82,7 +82,6 @@ public class LearnerController {
 
     //tạo learner
     @PostMapping()
-    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<LearnerDTO>> createLearner(@Valid @RequestBody LearnerDTO learnerDTO) {
         LearnerDTO created = learnerService.createLearner(learnerDTO);
         APIResponse<LearnerDTO> response = new APIResponse<>(

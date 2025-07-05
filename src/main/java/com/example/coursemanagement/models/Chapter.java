@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.Set;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"chapter\"")
 @Data
-public class Chapter {
+public class Chapter extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -24,8 +25,6 @@ public class Chapter {
     private String title;
 
     private ChapterStatus status;
-    private Instant createdAt;
-    private Instant updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "course_id")
