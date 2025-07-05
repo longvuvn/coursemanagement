@@ -13,9 +13,11 @@ public interface LearnerRepository extends JpaRepository<Learner, UUID> {
 
     boolean existsByPhoneNumber(String phoneNumber);
 
+    //lấy tất cả learner trong 1 khóa học
     @Query("SELECT r.learner FROM Registration r WHERE r.course.id = :courseId")
     List<Learner> findLearnsByCourseId(@Param("courseId") UUID courseId);
 
+    //tìm kiếm learner theo tên
     @Query("SELECT l FROM Learner l WHERE LOWER(l.fullName) LIKE LOWER(CONCAT('%', :name, '%'))")
     List<Learner> findLearnerByName(@Param("name") String name);
 }
