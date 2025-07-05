@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -15,7 +16,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"course\"")
 @Data
-public class Course {
+@EntityListeners(AuditingEntityListener.class)
+public class Course extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -30,10 +32,10 @@ public class Course {
     @Column(nullable = false)
     private BigDecimal price;
 
+    @Enumerated(EnumType.STRING)
     private CourseStatus status;
 
-    @Size(max = 1000)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
     @NotBlank(message = "Không được để trống")
     private String description;
 
@@ -44,9 +46,6 @@ public class Course {
 
     @Column(nullable = false)
     private Integer totalReviews;
-
-    private Instant createdAt;
-    private Instant updatedAt;
 
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     private Set<Review> review;

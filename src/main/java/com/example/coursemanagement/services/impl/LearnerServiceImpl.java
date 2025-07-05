@@ -48,19 +48,18 @@ public class LearnerServiceImpl implements LearnerService {
     @Override
     public LearnerDTO createLearner(LearnerDTO learnerDTO) {
         Learner learner = modelMapper.map(learnerDTO, Learner.class);
-        Instant now = Instant.now();
         Role role = roleService.getRoleByName("Learner");
         if (learnerDTO.getAvatar() == null || learnerDTO.getAvatar().isEmpty()) {
             learnerDTO.setAvatar(DEFAULT_AVATAR_PATH);
         }
         if (learnerRepository.existsByEmail(learnerDTO.getEmail().trim())) {
-            throw new DuplicateResourceException("Email đã tồn tại");
+            throw new DuplicateResourceException("Email không hợp lệ");
         }
         if (learnerRepository.existsByFullName(learnerDTO.getFullName().trim())) {
-            throw new DuplicateResourceException("Tên người dùng đã được sử dụng");
+            throw new DuplicateResourceException("Tên người dùng không hợp lệ");
         }
         if (learnerRepository.existsByPhoneNumber(learnerDTO.getPhoneNumber().trim())) {
-            throw new DuplicateResourceException("Số điện thoại đã được sử dụng");
+            throw new DuplicateResourceException("Số điện thoại không hợp lệ");
         }
         learner.setFullName(learnerDTO.getFullName());
         learner.setEmail(learnerDTO.getEmail());
@@ -71,8 +70,6 @@ public class LearnerServiceImpl implements LearnerService {
         learner.setStatus(UserStatus.ACTIVE);
         learner.setLevel(String.valueOf(LearnerLevel.BEGINNER));
         learner.setTotalCourses(0);
-        learner.setCreatedAt(now);
-        learner.setUpdatedAt(now);
         return modelMapper.map(learnerRepository.save(learner), LearnerDTO.class);
     }
 
@@ -90,7 +87,6 @@ public class LearnerServiceImpl implements LearnerService {
         existingLearner.setPassword(learnerDTO.getPassword());
         existingLearner.setTotalCourses(learnerDTO.getTotalCourses());
         existingLearner.setRole(roleService.getRoleByName(learnerDTO.getRoleName()));
-        existingLearner.setUpdatedAt(Instant.now());
         return modelMapper.map(learnerRepository.save(existingLearner), LearnerDTO.class);
     }
 

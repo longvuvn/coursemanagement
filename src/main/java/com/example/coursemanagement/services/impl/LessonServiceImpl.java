@@ -52,14 +52,11 @@ public class LessonServiceImpl implements LessonService {
         UUID uuid = UUID.fromString(lessonDTO.getChapterId());
         Chapter chapter = chapterRepository.findById(uuid).orElse(null);
         Lesson lesson = modelMapper.map(lessonDTO, Lesson.class);
-        Instant now = Instant.now();
         lesson.setTitle(lessonDTO.getTitle());
         lesson.setStatus(LessonStatus.ACTIVE);
         lesson.setContent(lessonDTO.getContent());
         lesson.setChapter(chapter);
         lesson.setReferenceLink(lessonDTO.getReferenceLink());
-        lesson.setCreatedAt(now);
-        lesson.setUpdatedAt(now);
         return modelMapper.map(lessonRepository.save(lesson), LessonDTO.class);
     }
 
@@ -71,7 +68,6 @@ public class LessonServiceImpl implements LessonService {
         existingLesson.setStatus(LessonStatus.valueOf(lessonDTO.getStatus()));
         existingLesson.setContent(lessonDTO.getContent());
         existingLesson.setReferenceLink(lessonDTO.getReferenceLink());
-        existingLesson.setUpdatedAt(Instant.now());
         return modelMapper.map(lessonRepository.save(existingLesson), LessonDTO.class);
     }
 

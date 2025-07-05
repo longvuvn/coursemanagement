@@ -39,12 +39,10 @@ public class ChapterServiceImpl implements ChapterService {
 
     @Override
     public ChapterDTO updateChapter(ChapterDTO chapterDTO, String id) {
-        Instant now = Instant.now();
         UUID uuid = UUID.fromString(id);
         Chapter existingChapter = chapterRepository.findById(uuid).orElse(null);
         existingChapter.setTitle(chapterDTO.getTitle());
         existingChapter.setStatus(ChapterStatus.valueOf(chapterDTO.getStatus()));
-        existingChapter.setUpdatedAt(now);
         return modelMapper.map(chapterRepository.save(existingChapter), ChapterDTO.class);
     }
 
@@ -53,12 +51,9 @@ public class ChapterServiceImpl implements ChapterService {
         UUID uuid = UUID.fromString(chapterDTO.getCourseId());
         Course course = courseRepository.findById(uuid).orElse(null);
         Chapter chapter = modelMapper.map(chapterDTO, Chapter.class);
-        Instant now = Instant.now();
         chapter.setTitle(chapterDTO.getTitle());
         chapter.setStatus(ChapterStatus.ACTIVE);
         chapter.setCourse(course);
-        chapter.setCreatedAt(now);
-        chapter.setUpdatedAt(now);
         return modelMapper.map(chapterRepository.save(chapter), ChapterDTO.class);
     }
 

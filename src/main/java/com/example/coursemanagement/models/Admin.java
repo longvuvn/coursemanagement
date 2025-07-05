@@ -13,6 +13,7 @@ import lombok.*;
 @Getter
 @Setter
 public class Admin extends User {
+
     @Column(nullable = false, length = 100)
     @NotBlank(message = "Không được để trống")
     private String department;

@@ -4,6 +4,7 @@ import com.example.coursemanagement.enums.SubmisstionStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -24,6 +25,8 @@ public class Submission {
 
 
     private Instant SubmittedAt;
+
+    @Enumerated(EnumType.STRING)
     private SubmisstionStatus status;
 
     @ManyToOne
