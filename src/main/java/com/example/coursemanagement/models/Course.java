@@ -16,6 +16,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"course\"")
 @Data
+
+@EntityListeners(AuditingEntityListener.class)
+
 public class Course extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -31,10 +34,10 @@ public class Course extends Auditing{
     @Column(nullable = false)
     private BigDecimal price;
 
+    @Enumerated(EnumType.STRING)
     private CourseStatus status;
 
-    @Size(max = 1000)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
     @NotBlank(message = "Không được để trống")
     private String description;
 
