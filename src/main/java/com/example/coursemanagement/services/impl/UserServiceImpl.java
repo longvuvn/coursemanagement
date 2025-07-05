@@ -43,7 +43,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO CreateUser(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
-        Instant now = Instant.now();
         if(userDTO.getAvatar() == null || userDTO.getAvatar().isEmpty()){
             userDTO.setAvatar(DEFAULT_AVATAR_PATH);
         }
@@ -55,8 +54,6 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setAvatar(userDTO.getAvatar());
         user.setStatus(UserStatus.ACTIVE);
-        user.setCreatedAt(now);
-        user.setUpdatedAt(now);
         return modelMapper.map(userRepository.save(user), UserDTO.class);
     }
 
@@ -71,7 +68,6 @@ public class UserServiceImpl implements UserService {
         existingUser.setAvatar(userDTO.getAvatar());
         existingUser.setStatus(UserStatus.valueOf(userDTO.getStatus()));
         User updatedUser = userRepository.save(existingUser);
-        existingUser.setUpdatedAt(Instant.now());
         return modelMapper.map(updatedUser, UserDTO.class);
     }
 

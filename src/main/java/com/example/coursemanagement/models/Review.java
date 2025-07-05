@@ -4,6 +4,7 @@ import com.example.coursemanagement.enums.ReviewStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -11,12 +12,13 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"review\"")
 @Data
-public class Review {
+@EntityListeners(AuditingEntityListener.class)
+public class Review extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Size(max = 1000)
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String comment;
 
     @Min(1)
@@ -24,9 +26,9 @@ public class Review {
     @NotNull
     private int rating;
 
+    @Enumerated(EnumType.STRING)
     private ReviewStatus status;
-    private Instant createdAt;
-    private Instant updatedAt;
+
 
     @ManyToOne
     @JoinColumn(name = "learner_id")

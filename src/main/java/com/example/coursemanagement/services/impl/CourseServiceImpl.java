@@ -52,7 +52,6 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseDTO createCourse(CourseDTO courseDTO) {
         Course course = modelMapper.map(courseDTO, Course.class);
-        Instant now = Instant.now();
         Category category = categoryRepository.findByName(courseDTO.getCategoryName());
         course.setTitle(courseDTO.getTitle());
         course.setDescription(courseDTO.getDescription());
@@ -62,8 +61,6 @@ public class CourseServiceImpl implements CourseService {
         course.setImage(courseDTO.getImage());
         course.setTotalReviews(0);
         course.setAverageRating(0.0);
-        course.setCreatedAt(now);
-        course.setUpdatedAt(now);
         Course savedCourse = courseRepository.save(course);
         return modelMapper.map(savedCourse, CourseDTO.class);
     }
@@ -80,7 +77,6 @@ public class CourseServiceImpl implements CourseService {
         existingCourse.setImage(courseDTO.getImage());
         existingCourse.setStatus(CourseStatus.valueOf(courseDTO.getStatus()));
         existingCourse.setTotalReviews(courseDTO.getTotalReviews());
-        existingCourse.setUpdatedAt(Instant.now());
         return modelMapper.map(courseRepository.save(existingCourse), CourseDTO.class);
     }
 

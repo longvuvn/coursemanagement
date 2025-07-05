@@ -9,7 +9,6 @@ public class ChapterDTO {
     private String id;
     private String title;
     private String status;
-    private String courseName;
     private String courseId;
     private String createdAt;
     private String updatedAt;

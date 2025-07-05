@@ -24,5 +24,7 @@ public class Registration {
     @JoinColumn(name = "course_id")
     private Course course;
     private Instant RegisteredAt;
+
+    @Enumerated(EnumType.STRING)
     private RegistrationStatus status;
 }

@@ -46,21 +46,20 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminDTO createAdmin(AdminDTO adminDTO) {
-        Admin admin = modelMapper.map(adminDTO, Admin.class);
-        Instant now = Instant.now();
         Role role = roleService.getRoleByName("Admin");
         if(adminDTO.getAvatar() == null || adminDTO.getAvatar().isEmpty()){
             adminDTO.setAvatar(DEFAULT_AVATAR_PATH);
         }
         if (adminRepository.existsByEmail(adminDTO.getEmail().trim())) {
-            throw new DuplicateResourceException("Email đã tồn tại");
+            throw new DuplicateResourceException("Email không hợp lệ");
         }
         if(adminRepository.existsByFullName(adminDTO.getFullName().trim())){
-            throw new DuplicateResourceException("Tên người dùng đã được sử dụng");
+            throw new DuplicateResourceException("Tên người dùng không hợp lệ");
         }
         if(adminRepository.existsByPhoneNumber(adminDTO.getPhoneNumber().trim())){
-            throw new DuplicateResourceException("Số điện thoại đã được sử dụng");
+            throw new DuplicateResourceException("Số điện thoại không hợp lệ");
         }
+        Admin admin = modelMapper.map(adminDTO, Admin.class);
         admin.setFullName(adminDTO.getFullName());
         admin.setEmail(adminDTO.getEmail());
         admin.setPhoneNumber(adminDTO.getPhoneNumber());
@@ -68,8 +67,6 @@ public class AdminServiceImpl implements AdminService {
         admin.setAvatar(adminDTO.getAvatar());
         admin.setRole(role);
         admin.setStatus(UserStatus.ACTIVE);
-        admin.setCreatedAt(now);
-        admin.setUpdatedAt(now);
         admin.setDepartment(adminDTO.getDepartment());
         return modelMapper.map(adminRepository.save(admin), AdminDTO.class);
     }
@@ -85,7 +82,6 @@ public class AdminServiceImpl implements AdminService {
         existingAdmin.setPassword(adminDTO.getPassword());
         existingAdmin.setDepartment(adminDTO.getDepartment());
         existingAdmin.setStatus(UserStatus.valueOf(adminDTO.getStatus()));
-        existingAdmin.setUpdatedAt(Instant.now());
         return modelMapper.map(adminRepository.save(existingAdmin), AdminDTO.class);
     }
 

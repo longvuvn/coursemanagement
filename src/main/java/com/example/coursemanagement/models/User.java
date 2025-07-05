@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -13,8 +13,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"user\"")
 @Data
-@Inheritance(strategy = InheritanceType.JOINED)// Mỗi class ánh xạ thành một bảng riêng, liên kết bằng JOIN qua khóa chính
-public class User {
+@Inheritance(strategy = InheritanceType.JOINED)
+@EntityListeners(AuditingEntityListener.class)
+public class User extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -44,15 +45,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
-
+    @Enumerated(EnumType.STRING)
     private UserStatus status;
     private String avatar;
-
-    @CreatedDate
-    private Instant createdAt;
-
-    @CreatedDate
-    private Instant updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
