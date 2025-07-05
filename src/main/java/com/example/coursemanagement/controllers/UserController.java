@@ -54,7 +54,7 @@ public class UserController {
     @PostMapping
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<UserDTO>> createUser(@Valid @RequestBody UserDTO userDTO) {
-        UserDTO created = userService.CreateUser(userDTO);
+        UserDTO created = userService.createUser(userDTO);
         APIResponse<UserDTO> response = new APIResponse<>(
                 "success",
                 "User created successfully",
@@ -69,7 +69,7 @@ public class UserController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<UserDTO>> updateUser(@PathVariable String id, @RequestBody UserDTO userDTO) {
-        UserDTO updated = userService.UpdateUser(userDTO, id);
+        UserDTO updated = userService.updateUser(userDTO, id);
         APIResponse<UserDTO> response = new APIResponse<>(
                 "success",
                 "User updated successfully",
@@ -84,7 +84,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<Void>> deleteUser(@PathVariable String id) {
-        userService.DeleteUser(id);
+        userService.deleteUser(id);
         APIResponse<Void> response = new APIResponse<>(
                 "success",
                 "User deleted successfully",

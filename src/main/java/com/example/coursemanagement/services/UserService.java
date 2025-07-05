@@ -9,9 +9,9 @@ public interface UserService {
 
     UserDTO getUserById(String id);
 
-    UserDTO CreateUser(UserDTO userDto);
+    UserDTO createUser(UserDTO userDto);
 
-    UserDTO UpdateUser(UserDTO userDto, String id);
+    UserDTO updateUser(UserDTO userDto, String id);
 
-    void DeleteUser(String id);
+    void deleteUser(String id);
 }

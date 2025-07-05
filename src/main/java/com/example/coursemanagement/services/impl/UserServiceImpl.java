@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO CreateUser(UserDTO userDTO) {
+    public UserDTO createUser(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
         if(userDTO.getAvatar() == null || userDTO.getAvatar().isEmpty()){
             userDTO.setAvatar(DEFAULT_AVATAR_PATH);
@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO UpdateUser(UserDTO userDTO, String id) {
+    public UserDTO updateUser(UserDTO userDTO, String id) {
         UUID uuid = UUID.fromString(id);
         User existingUser = userRepository.findById(uuid).orElse(null);
         existingUser.setFullName(userDTO.getFullName());
@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void DeleteUser(String id) {
+    public void deleteUser(String id) {
         UUID uuid = UUID.fromString(id);
         User existingUser = userRepository.findById(uuid).orElse(null);
         userRepository.delete(existingUser);
