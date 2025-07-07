@@ -14,6 +14,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"lesson\"")
 @Data
+
+
+@EntityListeners(AuditingEntityListener.class)
 public class Lesson extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -24,6 +27,7 @@ public class Lesson extends Auditing{
     @Column(nullable = false)
     private String title;
 
+    @Enumerated(EnumType.STRING)
     private LessonStatus status;
 
     @NotBlank(message = "Không được để trống")

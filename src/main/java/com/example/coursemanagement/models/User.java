@@ -11,6 +11,7 @@ import java.util.UUID;
 @Table(name = "\"user\"")
 @Data
 @Inheritance(strategy = InheritanceType.JOINED)
+
 public class User extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

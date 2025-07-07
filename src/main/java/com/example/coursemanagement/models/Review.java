@@ -17,7 +17,7 @@ public class Review extends Auditing{
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Size(max = 1000)
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String comment;
 
     @Min(1)
@@ -25,6 +25,7 @@ public class Review extends Auditing{
     @NotNull
     private int rating;
 
+    @Enumerated(EnumType.STRING)
     private ReviewStatus status;
 
 

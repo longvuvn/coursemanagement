@@ -14,6 +14,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"chapter\"")
 @Data
+
+@EntityListeners(AuditingEntityListener.class)
+
 public class Chapter extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -24,6 +27,7 @@ public class Chapter extends Auditing{
     @Size(min = 3, max = 255)
     private String title;
 
+    @Enumerated(EnumType.STRING)
     private ChapterStatus status;
 
     @ManyToOne
