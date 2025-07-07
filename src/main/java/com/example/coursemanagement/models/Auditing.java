@@ -1,9 +1,9 @@
 package com.example.coursemanagement.models;
 
- v10
+ 
 import jakarta.persistence.EntityListeners;
 
- main
+
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
