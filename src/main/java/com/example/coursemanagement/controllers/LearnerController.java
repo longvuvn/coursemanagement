@@ -1,6 +1,7 @@
 package com.example.coursemanagement.controllers;
 
 import com.example.coursemanagement.models.APIResponse;
+import com.example.coursemanagement.models.Pagination;
 import com.example.coursemanagement.models.dto.CourseDTO;
 import com.example.coursemanagement.models.dto.LearnerDTO;
 import com.example.coursemanagement.services.CourseService;
@@ -8,13 +9,18 @@ import com.example.coursemanagement.services.LearnerService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -28,14 +34,19 @@ public class LearnerController {
     //lấy tất cả learners
     @GetMapping()
     @PreAuthorize("hasRole('Admin')")
-    public ResponseEntity<APIResponse<List<LearnerDTO>>> getAllLearners() {
-        List<LearnerDTO> learners = learnerService.getAllLearners();
-        APIResponse<List<LearnerDTO>> response = new APIResponse<>(
+    public ResponseEntity<APIResponse<Pagination<LearnerDTO>>> getAllLearners(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Pagination<LearnerDTO> learners = learnerService.getAllLearners(page, size);
+        APIResponse<Pagination<LearnerDTO>> response = new APIResponse<>(
                 "success",
                 "Learners retrieved successfully",
                 learners,
                 null,
-                LocalDateTime.now());
+                LocalDateTime.now()
+        );
+
         return ResponseEntity.ok(response);
     }
 

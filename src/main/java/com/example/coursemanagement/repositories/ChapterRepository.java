@@ -15,11 +15,4 @@ public interface ChapterRepository extends JpaRepository<Chapter, UUID> {
     @Query("SELECT c FROM Chapter c WHERE LOWER(c.title) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<Chapter> findChapterByTitle(@Param("title") String title);
 
-    // tìm chapter mới nhất
-    @Query("SELECT c FROM Chapter c ORDER BY c.createdAt DESC")
-    List<Chapter> findLatestChapters();
-
-    //tìm chapter cũ nhất
-    @Query("SELECT c FROM Chapter c ORDER BY c.createdAt ASC")
-    List<Chapter> findOldestChpaters();
 }

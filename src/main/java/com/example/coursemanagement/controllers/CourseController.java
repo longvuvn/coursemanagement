@@ -1,6 +1,7 @@
 package com.example.coursemanagement.controllers;
 
 import com.example.coursemanagement.models.APIResponse;
+import com.example.coursemanagement.models.Pagination;
 import com.example.coursemanagement.models.dto.CourseDTO;
 import com.example.coursemanagement.models.dto.LearnerDTO;
 import com.example.coursemanagement.services.CourseService;
@@ -26,9 +27,12 @@ public class CourseController {
 
     //lấy tất cả courses
     @GetMapping
-    public ResponseEntity<APIResponse<List<CourseDTO>>> getAllCourses() {
-        List<CourseDTO> courses = courseService.getAllCourses();
-        APIResponse<List<CourseDTO>> response = new APIResponse<>(
+    public ResponseEntity<APIResponse<Pagination<CourseDTO>>> getAllCourses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Pagination<CourseDTO> courses = courseService.getAllCourses(page, size);
+        APIResponse<Pagination<CourseDTO>> response = new APIResponse<>(
                 "success",
                 "Courses retrieved successfully",
                 courses,

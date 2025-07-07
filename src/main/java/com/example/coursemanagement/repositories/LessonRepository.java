@@ -13,12 +13,4 @@ public interface LessonRepository extends JpaRepository<Lesson, UUID> {
     //tim kiếm lesson theo title
     @Query("SELECT l FROM Lesson l WHERE LOWER(l.title) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<Lesson> findLessonByTitle(@Param("title") String title);
-
-    // tìm lesson mới nhất
-    @Query("SELECT l FROM Lesson l ORDER BY l.createdAt DESC")
-    List<Lesson> findLatestLessons();
-
-    //tìm lesson cũ nhất
-    @Query("SELECT l FROM Lesson l ORDER BY l.createdAt ASC")
-    List<Lesson> findOldestLessons();
 }

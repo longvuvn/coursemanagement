@@ -3,6 +3,7 @@ package com.example.coursemanagement.services.impl;
 import com.example.coursemanagement.enums.LearnerLevel;
 import com.example.coursemanagement.enums.UserStatus;
 import com.example.coursemanagement.models.Learner;
+import com.example.coursemanagement.models.Pagination;
 import com.example.coursemanagement.models.Role;
 import com.example.coursemanagement.models.dto.LearnerDTO;
 import com.example.coursemanagement.repositories.LearnerRepository;
@@ -11,12 +12,14 @@ import com.example.coursemanagement.services.LearnerService;
 import com.example.coursemanagement.services.exceptions.error.DuplicateResourceException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,11 +34,23 @@ public class LearnerServiceImpl implements LearnerService {
     private final ModelMapper modelMapper;
 
     @Override
-    public List<LearnerDTO> getAllLearners() {
-        List<Learner> learners = learnerRepository.findAll();
-        return learners.stream()
+    public Pagination<LearnerDTO> getAllLearners(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Learner> learnersPage  = learnerRepository.findAll(pageable);
+
+        List<LearnerDTO> learnerDTOs = learnersPage.getContent()
+                .stream()
                 .map(learner -> modelMapper.map(learner, LearnerDTO.class))
                 .collect(Collectors.toList());
+
+        Pagination<LearnerDTO> pagination = new Pagination<>();
+        pagination.setContent(learnerDTOs);
+        pagination.setPage(learnersPage.getNumber());
+        pagination.setSize(learnersPage.getSize());
+        pagination.setTotalPages(learnersPage.getTotalPages());
+        pagination.setTotalElements(learnersPage.getTotalElements());
+
+        return pagination;
     }
 
     @Override

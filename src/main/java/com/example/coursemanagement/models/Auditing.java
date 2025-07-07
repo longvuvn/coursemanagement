@@ -9,7 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 
-@MappedSuperclass
+@MappedSuperclass //thông báo là 1 class không phải là Entity
 @EntityListeners(AuditingEntityListener.class)
 @Data
 public class Auditing {

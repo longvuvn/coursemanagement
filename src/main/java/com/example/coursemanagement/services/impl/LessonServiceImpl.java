@@ -11,6 +11,7 @@ import com.example.coursemanagement.services.LessonService;
 import com.example.coursemanagement.services.SubmissionService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -97,7 +98,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public List<LessonDTO> getLatestLessons() {
-        List<Lesson> lessonList = lessonRepository.findLatestLessons();
+        List<Lesson> lessonList = lessonRepository.findAll(Sort.by("createdAt").descending());
         return lessonList.stream()
                 .map(lesson -> modelMapper.map(lesson, LessonDTO.class))
                 .collect(Collectors.toList());
@@ -105,7 +106,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public List<LessonDTO> getOldestLessons() {
-        List<Lesson> lessonList = lessonRepository.findOldestLessons();
+        List<Lesson> lessonList = lessonRepository.findAll(Sort.by("createdAt").ascending());
         return lessonList.stream()
                 .map(lesson -> modelMapper.map(lesson, LessonDTO.class) )
                 .collect(Collectors.toList());
