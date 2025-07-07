@@ -20,7 +20,6 @@ public class Category {
     @NotBlank(message = "Không được để trống")
     private String name;
 
-    @Enumerated(EnumType.STRING)
     private CategoryStatus status;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)

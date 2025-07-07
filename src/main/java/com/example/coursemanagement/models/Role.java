@@ -22,7 +22,6 @@ public class Role {
     @Size(min = 3, max = 255)
     private String name;
 
-    @Enumerated(EnumType.STRING)
     private RoleStatus status;
 
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
