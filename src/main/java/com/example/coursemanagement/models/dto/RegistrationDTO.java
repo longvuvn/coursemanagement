@@ -8,7 +8,7 @@ public class RegistrationDTO {
     private String learnerId;
     private String courseId;
     private String learnerName;
-    private String courseName;
+    private String courseTitle;
     private String status;
     private String registrationAt;
 }
