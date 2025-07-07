@@ -42,6 +42,24 @@ public class CourseController {
         return ResponseEntity.ok(response);
     }
 
+    //lấy tất cả courses theo categoryName
+    @GetMapping("/categoryName")
+    public ResponseEntity<APIResponse<Pagination<CourseDTO>>> getCoursesByCategoryName(
+            @RequestParam String categoryName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Pagination<CourseDTO> courses = courseService.getCoursesByCategoryName(categoryName,page, size);
+        APIResponse<Pagination<CourseDTO>> response = new APIResponse<>(
+                "success",
+                "Courses retrieved successfully",
+                courses,
+                null,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.ok(response);
+    }
+
     //lấy course theo Id
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<CourseDTO>> getCourseById(@PathVariable String id) {

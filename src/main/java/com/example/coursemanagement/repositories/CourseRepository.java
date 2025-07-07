@@ -18,4 +18,9 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
     // tìm khóa học theo title
     @Query("SELECT c FROM Course c WHERE LOWER(c.title) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<Course> findCourseByTitle(@Param("title") String title);
+
+    //lọc course theo categoryName
+    @Query("SELECT c FROM Course c JOIN c.category a WHERE a.name = :categoryName")
+    Page<Course> findCourseByCategoryName(@Param("categoryName") String categoryName, Pageable pageable);
+
 }

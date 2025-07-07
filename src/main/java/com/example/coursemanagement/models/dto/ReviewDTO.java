@@ -9,6 +9,7 @@ public class ReviewDTO {
     private String rating;
     private String learnerId;
     private String courseId;
+    private String courseTitle;
     private String learnerName;
     private String createdAt;
     private String updatedAt;
