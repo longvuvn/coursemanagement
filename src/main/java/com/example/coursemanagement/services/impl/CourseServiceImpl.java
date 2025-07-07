@@ -3,6 +3,7 @@ package com.example.coursemanagement.services.impl;
 import com.example.coursemanagement.enums.CourseStatus;
 import com.example.coursemanagement.models.Category;
 import com.example.coursemanagement.models.Course;
+import com.example.coursemanagement.models.Pagination;
 import com.example.coursemanagement.models.dto.ChapterDTO;
 import com.example.coursemanagement.models.dto.CourseDTO;
 import com.example.coursemanagement.repositories.CategoryRepository;
@@ -12,10 +13,11 @@ import com.example.coursemanagement.services.ChapterService;
 import com.example.coursemanagement.services.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,11 +34,22 @@ public class CourseServiceImpl implements CourseService {
     private final ModelMapper modelMapper;
 
     @Override
-    public List<CourseDTO> getAllCourses() {
-        List<Course> courses = courseRepository.findAll();
-        return courses.stream()
+    public Pagination<CourseDTO> getAllCourses(int page, int size) {
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        Page<Course> coursePages = courseRepository.findAll(pageable);
+
+        List<CourseDTO> courseDTOS = coursePages.getContent().stream()
                 .map(course -> modelMapper.map(course, CourseDTO.class) )
                 .collect(Collectors.toList());
+
+        Pagination<CourseDTO> pagination = new Pagination<>();
+        pagination.setSize(coursePages.getNumber());
+        pagination.setSize(coursePages.getSize());
+        pagination.setTotalPages(coursePages.getTotalPages());
+        pagination.setTotalElements(coursePages.getTotalElements());
+        pagination.setContent(courseDTOS);
+
+        return pagination;
     }
 
     @Override
@@ -118,7 +131,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseDTO> getLatestCourses() {
-        List<Course> courseList = courseRepository.findLatestCourses();
+        List<Course> courseList = courseRepository.findAll(Sort.by("createdAt").descending());
         return courseList.stream()
                 .map(course -> modelMapper.map(course, CourseDTO.class) )
                 .collect(Collectors.toList());
@@ -126,7 +139,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseDTO> getOldestCourses() {
-        List<Course> courseList = courseRepository.findOldestCourses();
+        List<Course> courseList = courseRepository.findAll(Sort.by("createdAt").ascending());
         return courseList.stream()
                 .map(course -> modelMapper.map(course, CourseDTO.class) )
                 .collect(Collectors.toList());

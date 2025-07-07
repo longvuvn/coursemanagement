@@ -15,10 +15,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 
+
 @MappedSuperclass
-
 @EntityListeners(AuditingEntityListener.class)
-
 @Data
 public class Auditing {
     private Instant createdAt;

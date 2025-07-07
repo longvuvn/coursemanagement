@@ -11,6 +11,7 @@ import com.example.coursemanagement.services.ChapterService;
 import com.example.coursemanagement.services.LessonService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -86,7 +87,7 @@ public class ChapterServiceImpl implements ChapterService {
 
     @Override
     public List<ChapterDTO> getLatestChapters() {
-        List<Chapter> chapterList = chapterRepository.findLatestChapters();
+        List<Chapter> chapterList = chapterRepository.findAll(Sort.by("createdAt").descending());
         return chapterList.stream()
                 .map(chapter -> modelMapper.map(chapter, ChapterDTO.class))
                 .collect(Collectors.toList());
@@ -94,7 +95,7 @@ public class ChapterServiceImpl implements ChapterService {
 
     @Override
     public List<ChapterDTO> getOldestChapters() {
-        List<Chapter> chapterList = chapterRepository.findOldestChpaters();
+        List<Chapter> chapterList = chapterRepository.findAll(Sort.by("createdAt").ascending());
         return chapterList.stream()
                 .map(chapter -> modelMapper.map(chapter, ChapterDTO.class))
                 .collect(Collectors.toList());

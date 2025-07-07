@@ -1,12 +1,15 @@
 package com.example.coursemanagement.services;
 
+import com.example.coursemanagement.models.Pagination;
 import com.example.coursemanagement.models.dto.LearnerDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface LearnerService {
-    List<LearnerDTO> getAllLearners();
+    Pagination<LearnerDTO> getAllLearners(int page, int size);
     LearnerDTO getLearnerById(String id);
     LearnerDTO createLearner(LearnerDTO learnerDTO);
     LearnerDTO updateLearner(LearnerDTO learnerDTO, String id);

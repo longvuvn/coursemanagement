@@ -1,6 +1,8 @@
 package com.example.coursemanagement.repositories;
 
 import com.example.coursemanagement.models.Course;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,12 +18,4 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
     // tìm khóa học theo title
     @Query("SELECT c FROM Course c WHERE LOWER(c.title) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<Course> findCourseByTitle(@Param("title") String title);
-
-    // tìm khóa học mới nhất
-    @Query("SELECT c FROM Course c ORDER BY c.createdAt DESC")
-    List<Course> findLatestCourses();
-
-    // tìm khóa học cũ nhất
-    @Query("SELECT c FROM Course c ORDER BY c.createdAt ASC")
-    List<Course> findOldestCourses();
 }
