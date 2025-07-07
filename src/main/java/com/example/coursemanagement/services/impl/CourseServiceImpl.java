@@ -14,6 +14,7 @@ import com.example.coursemanagement.services.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Pagination<CourseDTO> getAllCourses(int page, int size) {
-        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        Pageable pageable = PageRequest.of(page, size);
         Page<Course> coursePages = courseRepository.findAll(pageable);
 
         List<CourseDTO> courseDTOS = coursePages.getContent().stream()
@@ -144,4 +145,23 @@ public class CourseServiceImpl implements CourseService {
                 .map(course -> modelMapper.map(course, CourseDTO.class) )
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Pagination<CourseDTO> getCoursesByCategoryName(String categoryName, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Course> coursePage = courseRepository.findCourseByCategoryName(categoryName, pageable);
+
+        List<CourseDTO> courseDTOS = coursePage.getContent().stream()
+                .map(course -> modelMapper.map(course, CourseDTO.class) )
+                .collect(Collectors.toList());
+
+        Pagination<CourseDTO> pagination = new Pagination<>();
+        pagination.setSize(coursePage.getNumber());
+        pagination.setSize(coursePage.getSize());
+        pagination.setTotalPages(coursePage.getTotalPages());
+        pagination.setTotalElements(coursePage.getTotalElements());
+        pagination.setContent(courseDTOS);
+
+        return pagination;
+     }
 }

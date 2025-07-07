@@ -17,4 +17,5 @@ public interface CourseService {
     List<CourseDTO> getCoursesByTitle(String title);
     List<CourseDTO> getLatestCourses();
     List<CourseDTO> getOldestCourses();
+    Pagination<CourseDTO> getCoursesByCategoryName(String categoryName, int page, int size);
 }
