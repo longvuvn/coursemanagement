@@ -52,7 +52,7 @@ public class AdminServiceImpl implements AdminService {
         }
         if (adminRepository.existsByEmail(adminDTO.getEmail().trim())) {
             throw new DuplicateResourceException("Email không hợp lệ");
-
+        }
         if(adminRepository.existsByPhoneNumber(adminDTO.getPhoneNumber().trim())){
             throw new DuplicateResourceException("Số điện thoại không hợp lệ");
         }
