@@ -33,4 +33,4 @@ public class Auditing {
     protected void onUpdate() {
         updatedAt = Instant.now();
     }
-
+}
