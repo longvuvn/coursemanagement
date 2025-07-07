@@ -12,11 +12,14 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"order\"")
 @Data
+
+@EntityListeners(AuditingEntityListener.class)
 public class Order extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     @ManyToOne

@@ -69,6 +69,7 @@ public class LearnerServiceImpl implements LearnerService {
         }
         if (learnerRepository.existsByEmail(learnerDTO.getEmail().trim())) {
             throw new DuplicateResourceException("Email không hợp lệ");
+
         }
         if (learnerRepository.existsByPhoneNumber(learnerDTO.getPhoneNumber().trim())) {
             throw new DuplicateResourceException("Số điện thoại không hợp lệ");

@@ -42,13 +42,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO createOrder(OrderDTO orderDTO) {
-        Instant now = Instant.now();
         UUID learnerId = UUID.fromString(orderDTO.getLearnerId());
         Learner learner = learnerRepository.findById(learnerId).orElse(null);
-
         Order order = modelMapper.map(orderDTO, Order.class);
         order.setStatus(OrderStatus.ACTIVE);
-        order.setCreatedAt(now);
         order.setLearner(learner);
         Order savedOrder = orderRepository.save(order);
         if (savedOrder.getId() != null) {
