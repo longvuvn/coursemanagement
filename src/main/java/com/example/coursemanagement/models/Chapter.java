@@ -27,7 +27,6 @@ public class Chapter extends Auditing{
     @Size(min = 3, max = 255)
     private String title;
 
-    @Enumerated(EnumType.STRING)
     private ChapterStatus status;
 
     @ManyToOne

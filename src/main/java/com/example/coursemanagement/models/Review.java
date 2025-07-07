@@ -25,7 +25,6 @@ public class Review extends Auditing{
     @NotNull
     private int rating;
 
-    @Enumerated(EnumType.STRING)
     private ReviewStatus status;
 
 

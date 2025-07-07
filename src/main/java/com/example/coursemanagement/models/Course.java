@@ -34,7 +34,6 @@ public class Course extends Auditing{
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Enumerated(EnumType.STRING)
     private CourseStatus status;
 
     @Column(nullable = false, columnDefinition = "MEDIUMTEXT")

@@ -52,7 +52,7 @@ public class AdminServiceImpl implements AdminService {
         }
         if (adminRepository.existsByEmail(adminDTO.getEmail().trim())) {
             throw new DuplicateResourceException("Email không hợp lệ");
-
+        }
         if(adminRepository.existsByPhoneNumber(adminDTO.getPhoneNumber().trim())){
             throw new DuplicateResourceException("Số điện thoại không hợp lệ");
         }
@@ -67,6 +67,7 @@ public class AdminServiceImpl implements AdminService {
         admin.setDepartment(adminDTO.getDepartment());
         return modelMapper.map(adminRepository.save(admin), AdminDTO.class);
     }
+
 
     @Override
     public AdminDTO updateAdmin(AdminDTO adminDTO, String id) {

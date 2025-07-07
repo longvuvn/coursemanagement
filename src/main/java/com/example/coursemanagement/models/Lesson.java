@@ -27,7 +27,6 @@ public class Lesson extends Auditing{
     @Column(nullable = false)
     private String title;
 
-    @Enumerated(EnumType.STRING)
     private LessonStatus status;
 
     @NotBlank(message = "Không được để trống")
