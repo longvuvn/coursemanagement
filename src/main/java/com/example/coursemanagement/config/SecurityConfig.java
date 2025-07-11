@@ -3,6 +3,7 @@ package com.example.coursemanagement.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -25,12 +26,32 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/login", "/api/v1/learners", "/api/v1/auth/refresh", "/api/v1/admins").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers(
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/refresh",
+                                "/api/v1/learners",
+                                "/api/v1/courses/*"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/learners").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/admins/*").hasRole("Admin")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/admins/*").hasRole("Admin")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/admins/*").hasRole("Admin")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/courses").hasRole("Admin")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/courses/*").hasRole("Admin")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/courses/*").hasRole("Admin")
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/learners/*").hasRole("Learner")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/learners/*").hasRole("Learner")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/learners/*/courses").hasRole("Learner")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/submissions/*").hasRole("Learner")
+                        .anyRequest().authenticated()
+                )
                 .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {

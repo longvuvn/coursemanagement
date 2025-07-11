@@ -9,12 +9,11 @@ import com.example.coursemanagement.repositories.ChapterRepository;
 import com.example.coursemanagement.repositories.LessonRepository;
 import com.example.coursemanagement.services.LessonService;
 import com.example.coursemanagement.services.SubmissionService;
+import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,7 +31,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public List<LessonDTO> getAllLessons() {
-        List<Lesson> lessons = lessonRepository.findAll();
+        List<Lesson> lessons = lessonRepository.findByStatus(LessonStatus.ACTIVE);
         return lessons.stream()
                 .map(lesson -> modelMapper.map(lesson, LessonDTO.class) )
                 .collect(Collectors.toList());
@@ -42,7 +41,8 @@ public class LessonServiceImpl implements LessonService {
     public LessonDTO getLessonById(String id) {
         UUID uuid = UUID.fromString(id);
         Optional<Lesson> optionalLesson = lessonRepository.findById(uuid);
-        LessonDTO lessonDTO = optionalLesson.map(lesson -> modelMapper.map(lesson, LessonDTO.class)).orElse(null);
+        LessonDTO lessonDTO = optionalLesson.map(lesson -> modelMapper.map(lesson, LessonDTO.class))
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Lesson"));
         List<SubmissionDTO> submissionDTOS = submissionService.getSubmissionsByLessonId(uuid.toString());
         lessonDTO.setSubmissions(submissionDTOS);
         return lessonDTO;
@@ -53,29 +53,25 @@ public class LessonServiceImpl implements LessonService {
         UUID uuid = UUID.fromString(lessonDTO.getChapterId());
         Chapter chapter = chapterRepository.findById(uuid).orElse(null);
         Lesson lesson = modelMapper.map(lessonDTO, Lesson.class);
-        lesson.setTitle(lessonDTO.getTitle());
         lesson.setStatus(LessonStatus.ACTIVE);
-        lesson.setContent(lessonDTO.getContent());
         lesson.setChapter(chapter);
-        lesson.setReferenceLink(lessonDTO.getReferenceLink());
         return modelMapper.map(lessonRepository.save(lesson), LessonDTO.class);
     }
 
     @Override
     public LessonDTO updateLesson(LessonDTO lessonDTO, String id) {
         UUID uuid = UUID.fromString(id);
-        Lesson existingLesson = lessonRepository.findById(uuid).orElse(null);
-        existingLesson.setTitle(lessonDTO.getTitle());
-        existingLesson.setStatus(LessonStatus.valueOf(lessonDTO.getStatus()));
-        existingLesson.setContent(lessonDTO.getContent());
-        existingLesson.setReferenceLink(lessonDTO.getReferenceLink());
+        Lesson existingLesson = lessonRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Lesson"));
+        modelMapper.map(lessonDTO, existingLesson);
         return modelMapper.map(lessonRepository.save(existingLesson), LessonDTO.class);
     }
 
     @Override
     public void deleteLesson(String id) {
         UUID uuid = UUID.fromString(id);
-        Lesson existingLesson = lessonRepository.findById(uuid).orElse(null);
+        Lesson existingLesson = lessonRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Lesson"));
         lessonRepository.delete(existingLesson);
     }
 

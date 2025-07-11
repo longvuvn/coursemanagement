@@ -10,6 +10,7 @@ import com.example.coursemanagement.repositories.LearnerRepository;
 import com.example.coursemanagement.repositories.RegistrationRepository;
 import com.example.coursemanagement.services.LearnerService;
 import com.example.coursemanagement.services.RegistrationService;
+import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,8 @@ public class RegisterServiceImpl implements RegistrationService {
     public RegistrationDTO getRegistrationById(String id) {
         UUID uuid = UUID.fromString(id);
         Optional<Registration> optionalRegistration = registrationRepository.findById(uuid);
-        return optionalRegistration.map(registration -> modelMapper.map(registration, RegistrationDTO.class)).orElse(null);
+        return optionalRegistration.map(registration -> modelMapper.map(registration, RegistrationDTO.class))
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Registration"));
     }
 
     @Override
@@ -49,15 +51,16 @@ public class RegisterServiceImpl implements RegistrationService {
         UUID learnerId = UUID.fromString(registrationDTO.getLearnerId());
         UUID courseId = UUID.fromString(registrationDTO.getCourseId());
 
-        Learner learner = learnerRepository.findById(learnerId).orElse(null);
-        Course course = courseRepository.findById(courseId).orElse(null);
+        Learner learner = learnerRepository.findById(learnerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Learner"));
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Course"));
 
         Registration registration = modelMapper.map(registrationDTO, Registration.class);
-        Instant now = Instant.now();
         registration.setLearner(learner);
         registration.setCourse(course);
         registration.setStatus(RegistrationStatus.PENDING);
-        registration.setRegisteredAt(now);
+        registration.setRegisteredAt(Instant.now());
         Registration saved = registrationRepository.save(registration);
         learnerService.updateTotalCourses(registrationDTO.getLearnerId());
         return modelMapper.map(saved, RegistrationDTO.class);
@@ -66,7 +69,8 @@ public class RegisterServiceImpl implements RegistrationService {
     @Override
     public RegistrationDTO updateRegistration(RegistrationDTO registrationDTO, String id) {
         UUID uuid = UUID.fromString(id);
-        Registration existingRegistration = registrationRepository.findById(uuid).orElse(null);
+        Registration existingRegistration = registrationRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found"));
         existingRegistration.setStatus(RegistrationStatus.valueOf(registrationDTO.getStatus()));
         return modelMapper.map(registrationRepository.save(existingRegistration), RegistrationDTO.class);
     }
@@ -74,7 +78,8 @@ public class RegisterServiceImpl implements RegistrationService {
     @Override
     public void deleteRegistration(String id) {
         UUID uuid = UUID.fromString(id);
-        Registration existingRegistration = registrationRepository.findById(uuid).orElse(null);
+        Registration existingRegistration = registrationRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found"));
         registrationRepository.delete(existingRegistration);
 
     }

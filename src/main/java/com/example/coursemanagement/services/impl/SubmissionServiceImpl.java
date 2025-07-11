@@ -9,6 +9,7 @@ import com.example.coursemanagement.repositories.LearnerRepository;
 import com.example.coursemanagement.repositories.LessonRepository;
 import com.example.coursemanagement.repositories.SubmissionRepository;
 import com.example.coursemanagement.services.SubmissionService;
+import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,8 @@ public class SubmissionServiceImpl implements SubmissionService {
     public SubmissionDTO getSubmissionById(String id) {
         UUID uuid = UUID.fromString(id);
         Optional<Submission> optionalSubmission = submissionRepository.findById(uuid);
-        return optionalSubmission.map(submission -> modelMapper.map(submission, SubmissionDTO.class)).orElse(null);
+        return optionalSubmission.map(submission -> modelMapper.map(submission, SubmissionDTO.class))
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Submission"));
     }
 
     @Override
@@ -47,16 +49,17 @@ public class SubmissionServiceImpl implements SubmissionService {
         UUID learnerId = UUID.fromString(submissionDTO.getLearnerId());
         UUID lessonId = UUID.fromString(submissionDTO.getLessonId());
 
-        Learner learner = learnerRepository.findById(learnerId).orElse(null);
-        Lesson lesson = lessonRepository.findById(lessonId).orElse(null);
+        Learner learner = learnerRepository.findById(learnerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Learner"));
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Lesson"));
 
         Submission submission = modelMapper.map(submissionDTO, Submission.class);
-        Instant now = Instant.now();
         submission.setFile_Url(submissionDTO.getFile_Url());
         submission.setStatus(SubmisstionStatus.PENDING);
         submission.setLearner(learner);
         submission.setLesson(lesson);
-        submission.setSubmittedAt(now);
+        submission.setSubmittedAt(Instant.now());
         submission.setScore(null);
 
         return modelMapper.map(submissionRepository.save(submission), SubmissionDTO.class);
@@ -65,18 +68,18 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public SubmissionDTO updateSubmission(SubmissionDTO submissionDTO, String id) {
         UUID uuid = UUID.fromString(id);
-        Submission existingSubmission = submissionRepository.findById(uuid).orElse(null);
-        existingSubmission.setFile_Url(submissionDTO.getFile_Url());
-        existingSubmission.setStatus(SubmisstionStatus.valueOf(submissionDTO.getStatus()));
+        Submission existingSubmission = submissionRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Submission"));
+        modelMapper.map(submissionDTO, existingSubmission);
         existingSubmission.setSubmittedAt(Instant.now());
         return modelMapper.map(submissionRepository.save(existingSubmission), SubmissionDTO.class);
-
     }
 
     @Override
     public void deleteSubmission(String id) {
         UUID uuid = UUID.fromString(id);
-        Submission existingSubmission = submissionRepository.findById(uuid).orElse(null);
+        Submission existingSubmission = submissionRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Submission"));
         submissionRepository.delete(existingSubmission);
     }
 

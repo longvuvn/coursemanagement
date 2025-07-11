@@ -1,5 +1,6 @@
 package com.example.coursemanagement.services.impl;
 
+import com.example.coursemanagement.config.CustomUserDetailsService;
 import com.example.coursemanagement.models.auth.AuthRequest;
 import com.example.coursemanagement.models.auth.AuthResponse;
 import com.example.coursemanagement.models.auth.RefreshTokenRequest;

@@ -9,13 +9,11 @@ import com.example.coursemanagement.repositories.ChapterRepository;
 import com.example.coursemanagement.repositories.CourseRepository;
 import com.example.coursemanagement.services.ChapterService;
 import com.example.coursemanagement.services.LessonService;
+import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,7 +30,7 @@ public class ChapterServiceImpl implements ChapterService {
 
     @Override
     public List<ChapterDTO> getAllChapters() {
-        List<Chapter> chapters = chapterRepository.findAll();
+        List<Chapter> chapters = chapterRepository.findByStatus(ChapterStatus.ACTIVE);
         return chapters.stream()
                 .map(chapter -> modelMapper.map(chapter, ChapterDTO.class) )
                 .collect(Collectors.toList());
@@ -41,8 +39,9 @@ public class ChapterServiceImpl implements ChapterService {
     @Override
     public ChapterDTO updateChapter(ChapterDTO chapterDTO, String id) {
         UUID uuid = UUID.fromString(id);
-        Chapter existingChapter = chapterRepository.findById(uuid).orElse(null);
-        existingChapter.setTitle(chapterDTO.getTitle());
+        Chapter existingChapter = chapterRepository.findById(uuid)
+                        .orElseThrow(() -> new ResourceNotFoundException("Not Found This Course"));
+        modelMapper.map(chapterDTO, existingChapter);
         existingChapter.setStatus(ChapterStatus.valueOf(chapterDTO.getStatus()));
         return modelMapper.map(chapterRepository.save(existingChapter), ChapterDTO.class);
     }
@@ -50,9 +49,9 @@ public class ChapterServiceImpl implements ChapterService {
     @Override
     public ChapterDTO createChapter(ChapterDTO chapterDTO) {
         UUID uuid = UUID.fromString(chapterDTO.getCourseId());
-        Course course = courseRepository.findById(uuid).orElse(null);
+        Course course = courseRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Course"));
         Chapter chapter = modelMapper.map(chapterDTO, Chapter.class);
-        chapter.setTitle(chapterDTO.getTitle());
         chapter.setStatus(ChapterStatus.ACTIVE);
         chapter.setCourse(course);
         return modelMapper.map(chapterRepository.save(chapter), ChapterDTO.class);
@@ -62,7 +61,8 @@ public class ChapterServiceImpl implements ChapterService {
     public ChapterDTO getChapterById(String id) {
         UUID uuid = UUID.fromString(id);
         Optional<Chapter> optionalChapter = chapterRepository.findById(uuid);
-        ChapterDTO chapterDTO = optionalChapter.map(chapter -> modelMapper.map(chapter, ChapterDTO.class)).orElse(null);
+        ChapterDTO chapterDTO = optionalChapter.map(chapter -> modelMapper.map(chapter, ChapterDTO.class))
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Course"));
         List<LessonDTO> lessonDTOS = lessonService.getLessonsByChapterId(uuid.toString());
         chapterDTO.setLessons(lessonDTOS);
         return chapterDTO;
@@ -104,7 +104,8 @@ public class ChapterServiceImpl implements ChapterService {
     @Override
     public void deleteChapter(String id) {
         UUID uuid = UUID.fromString(id);
-        Chapter existingChapter = chapterRepository.findById(uuid).orElse(null);
+        Chapter existingChapter = chapterRepository.findById(uuid)
+                        .orElseThrow(() -> new ResourceNotFoundException("Not Found This Course"));
         chapterRepository.delete(existingChapter);
     }
 }

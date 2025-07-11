@@ -6,6 +6,7 @@ import com.example.coursemanagement.models.Category;
 import com.example.coursemanagement.models.dto.CategoryDTO;
 import com.example.coursemanagement.repositories.CategoryRepository;
 import com.example.coursemanagement.services.CategoryService;
+import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -33,13 +34,13 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDTO getCategoryById(String id) {
         UUID uuid = UUID.fromString(id);
         Optional<Category> optionalCategory = categoryRepository.findById(uuid);
-        return optionalCategory.map(category -> modelMapper.map(category, CategoryDTO.class)).orElse(null);
+        return optionalCategory.map(category -> modelMapper.map(category, CategoryDTO.class))
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Category"));
     }
 
     @Override
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
         Category category = modelMapper.map(categoryDTO, Category.class);
-        category.setName(categoryDTO.getName());
         category.setStatus(CategoryStatus.ACTIVE);
         return modelMapper.map(categoryRepository.save(category), CategoryDTO.class);
     }
@@ -47,16 +48,17 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDTO updateCategory(CategoryDTO categoryDTO, String id) {
         UUID uuid = UUID.fromString(id);
-        Category existingCategory = categoryRepository.findById(uuid).orElse(null);
-        existingCategory.setName(categoryDTO.getName());
-        existingCategory.setStatus(CategoryStatus.valueOf(categoryDTO.getStatus()));
+        Category existingCategory = categoryRepository.findById(uuid)
+                        .orElseThrow(() -> new ResourceNotFoundException("Not Found This Category"));
+        modelMapper.map(categoryDTO, existingCategory);
         return modelMapper.map(categoryRepository.save(existingCategory), CategoryDTO.class);
     }
 
     @Override
     public void deleteCategory(String id) {
         UUID uuid = UUID.fromString(id);
-        Category existingCategory = categoryRepository.findById(uuid).orElse(null);
+        Category existingCategory = categoryRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Category"));
         categoryRepository.delete(existingCategory);
     }
 

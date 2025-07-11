@@ -9,10 +9,10 @@ import com.example.coursemanagement.repositories.LearnerRepository;
 import com.example.coursemanagement.repositories.OrderRepository;
 import com.example.coursemanagement.services.OrderDetailService;
 import com.example.coursemanagement.services.OrderService;
+import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,15 +37,17 @@ public class OrderServiceImpl implements OrderService {
     public OrderDTO getOrderById(String id) {
         UUID uuid = UUID.fromString(id);
         Optional<Order> optionalOrder = orderRepository.findById(uuid);
-        return optionalOrder.map(order -> modelMapper.map(order,OrderDTO.class)).orElse(null);
+        return optionalOrder.map(order -> modelMapper.map(order,OrderDTO.class))
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Order"));
     }
 
     @Override
     public OrderDTO createOrder(OrderDTO orderDTO) {
         UUID learnerId = UUID.fromString(orderDTO.getLearnerId());
-        Learner learner = learnerRepository.findById(learnerId).orElse(null);
+        Learner learner = learnerRepository.findById(learnerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Learner"));
         Order order = modelMapper.map(orderDTO, Order.class);
-        order.setStatus(OrderStatus.ACTIVE);
+        order.setStatus(OrderStatus.PENDING);
         order.setLearner(learner);
         Order savedOrder = orderRepository.save(order);
         if (savedOrder.getId() != null) {
@@ -58,17 +60,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDTO updateOrder(OrderDTO orderDTO, String id) {
+    public OrderDTO updateOrder(String id, OrderStatus status) {
         UUID uuid = UUID.fromString(id);
-        Order existingOrder = orderRepository.findById(uuid).orElse(null);
-        existingOrder.setStatus(OrderStatus.valueOf(orderDTO.getStatus()));
-        return modelMapper.map(orderRepository.save(existingOrder), OrderDTO.class);
+        Order existingOrder = orderRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Order"));
+        existingOrder.setStatus(status);
+        Order updated = orderRepository.save(existingOrder);
+        return modelMapper.map(updated, OrderDTO.class);
     }
 
     @Override
     public void deleteOrder(String id) {
         UUID uuid = UUID.fromString(id);
-        Order existingOrder = orderRepository.findById(uuid).orElse(null);
+        Order existingOrder = orderRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Order"));
         orderRepository.delete(existingOrder);
     }
 }

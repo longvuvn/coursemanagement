@@ -6,14 +6,13 @@ import com.example.coursemanagement.models.Role;
 import com.example.coursemanagement.models.dto.AdminDTO;
 import com.example.coursemanagement.repositories.AdminRepository;
 import com.example.coursemanagement.services.AdminService;
-import com.example.coursemanagement.services.exceptions.error.DuplicateResourceException;
-import com.example.coursemanagement.services.exceptions.error.ValidationException;
+import com.example.coursemanagement.services.exceptions.errors.DuplicateResourceException;
+import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
+import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,13 +40,15 @@ public class AdminServiceImpl implements AdminService {
     public AdminDTO getAdminById(String id) {
         UUID uuid = UUID.fromString(id);
         Optional<Admin> optionalAdmin = adminRepository.findById(uuid);
-        return optionalAdmin.map(admin -> modelMapper.map(admin, AdminDTO.class)).orElse(null);
+        return optionalAdmin.map(admin -> modelMapper.map(admin, AdminDTO.class))
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Admin"));
     }
 
     @Override
     public AdminDTO createAdmin(AdminDTO adminDTO) {
         Role role = roleService.getRoleByName("Admin");
-        if(adminDTO.getAvatar() == null || adminDTO.getAvatar().isEmpty()){
+        Admin admin = modelMapper.map(adminDTO, Admin.class);
+        if(!StringUtils.hasText(adminDTO.getAvatar())){
             adminDTO.setAvatar(DEFAULT_AVATAR_PATH);
         }
         if (adminRepository.existsByEmail(adminDTO.getEmail().trim())) {
@@ -56,15 +57,10 @@ public class AdminServiceImpl implements AdminService {
         if(adminRepository.existsByPhoneNumber(adminDTO.getPhoneNumber().trim())){
             throw new DuplicateResourceException("Số điện thoại không hợp lệ");
         }
-        Admin admin = modelMapper.map(adminDTO, Admin.class);
-        admin.setFullName(adminDTO.getFullName());
-        admin.setEmail(adminDTO.getEmail());
-        admin.setPhoneNumber(adminDTO.getPhoneNumber());
-        admin.setPassword(passwordEncoder.encode(adminDTO.getPassword()));
         admin.setAvatar(adminDTO.getAvatar());
+        admin.setPassword(passwordEncoder.encode(adminDTO.getPassword()));
         admin.setRole(role);
         admin.setStatus(UserStatus.ACTIVE);
-        admin.setDepartment(adminDTO.getDepartment());
         return modelMapper.map(adminRepository.save(admin), AdminDTO.class);
     }
 
@@ -72,21 +68,17 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public AdminDTO updateAdmin(AdminDTO adminDTO, String id) {
         UUID uuid = UUID.fromString(id);
-        Admin existingAdmin = adminRepository.findById(uuid).orElse(null);
-        existingAdmin.setFullName(adminDTO.getFullName());
-        existingAdmin.setEmail(adminDTO.getEmail());
-        existingAdmin.setPhoneNumber(adminDTO.getPhoneNumber());
-        existingAdmin.setAvatar(adminDTO.getAvatar());
-        existingAdmin.setPassword(adminDTO.getPassword());
-        existingAdmin.setDepartment(adminDTO.getDepartment());
-        existingAdmin.setStatus(UserStatus.valueOf(adminDTO.getStatus()));
+        Admin existingAdmin = adminRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Admin"));
+        modelMapper.map(adminDTO, existingAdmin);
         return modelMapper.map(adminRepository.save(existingAdmin), AdminDTO.class);
     }
 
     @Override
     public void deleteAdmin(String id) {
         UUID uuid = UUID.fromString(id);
-        Admin existingAdmin = adminRepository.findById(uuid).orElse(null);
+        Admin existingAdmin = adminRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Admin"));
         adminRepository.delete(existingAdmin);
     }
 }

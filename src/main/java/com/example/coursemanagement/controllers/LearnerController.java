@@ -6,19 +6,15 @@ import com.example.coursemanagement.models.dto.CourseDTO;
 import com.example.coursemanagement.models.dto.LearnerDTO;
 import com.example.coursemanagement.services.CourseService;
 import com.example.coursemanagement.services.LearnerService;
+import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -31,82 +27,134 @@ public class LearnerController {
     private final LearnerService learnerService;
     private final CourseService courseService;
 
-    //lấy tất cả learners
+    //Get All Learners
     @GetMapping()
-    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<Pagination<LearnerDTO>>> getAllLearners(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
-        Pagination<LearnerDTO> learners = learnerService.getAllLearners(page, size);
-        APIResponse<Pagination<LearnerDTO>> response = new APIResponse<>(
-                "success",
-                "Learners retrieved successfully",
-                learners,
-                null,
-                LocalDateTime.now()
-        );
+        try{
+            Pagination<LearnerDTO> learners = learnerService.getAllLearners(page, size);
+            APIResponse<Pagination<LearnerDTO>> response = new APIResponse<>(
+                    "success",
+                    "Learners retrieved successfully",
+                    learners,
+                    null,
+                    LocalDateTime.now()
+            );
 
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
+        }catch (ResourceNotFoundException ex){
+            APIResponse<Pagination<LearnerDTO>> response = new APIResponse<>(
+                    "error",
+                    "Learners retrieved false",
+                    null,
+                    Map.of("Error", ex.getMessage()),
+                    LocalDateTime.now()
+            );
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
     }
 
     //lấy learners theo Id
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<LearnerDTO>> getLearnerById(@PathVariable String id) {
-        LearnerDTO learnerDTO = learnerService.getLearnerById(id);
-        APIResponse<LearnerDTO> response = new APIResponse<>(
-                "success",
-                "Learner retrieved successfully",
-                learnerDTO,
-                null,
-                LocalDateTime.now());
-        return ResponseEntity.ok(response);
+        try {
+            LearnerDTO learnerDTO = learnerService.getLearnerById(id);
+            APIResponse<LearnerDTO> response = new APIResponse<>(
+                    "success",
+                    "Learner retrieved successfully",
+                    learnerDTO,
+                    null,
+                    LocalDateTime.now());
+            return ResponseEntity.ok(response);
+        } catch (ResourceNotFoundException ex) {
+            APIResponse<LearnerDTO> response = new APIResponse<>(
+                    "error",
+                    "Learner retrieved failed",
+                    null,
+                    Map.of("error", ex.getMessage()),
+                    LocalDateTime.now());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
 
     //lấy tất cả courses của learners
     @GetMapping("/{id}/courses")
     public ResponseEntity<APIResponse<List<CourseDTO>>> getLearnersCourses(@PathVariable UUID id) {
-        List<CourseDTO> courseDTOList = courseService.getCoursesByLearnerId(id);
-        APIResponse<List<CourseDTO>> response = new APIResponse<>(
-                "success",
-                "Learners courses retrieved successfully",
-                courseDTOList,
-                null,
-                LocalDateTime.now());
-        return ResponseEntity.ok(response);
+        try {
+            List<CourseDTO> courseDTOList = courseService.getCoursesByLearnerId(id);
+            APIResponse<List<CourseDTO>> response = new APIResponse<>(
+                    "success",
+                    "Learner's courses retrieved successfully",
+                    courseDTOList,
+                    null,
+                    LocalDateTime.now()
+            );
+            return ResponseEntity.ok(response);
+        } catch (ResourceNotFoundException ex) {
+            APIResponse<List<CourseDTO>> response = new APIResponse<>(
+                    "error",
+                    "Learner's courses retrieval failed",
+                    null,
+                    Map.of("error", ex.getMessage()),
+                    LocalDateTime.now()
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
 
     //tìm kiếm learners theo name
     @GetMapping("/search")
-    @PreAuthorize("hasRole('Admin')")
-    public ResponseEntity<APIResponse<List<LearnerDTO>>> searchLearner (@RequestParam String name){
-        List<LearnerDTO> learnerDTO = learnerService.getLearnerByName(name);
-        APIResponse<List<LearnerDTO>> response = new APIResponse<>(
-                "success",
-                "Learner retrieved successfully",
-                learnerDTO,
-                null,
-                LocalDateTime.now());
-        return ResponseEntity.status(200).body(response);
+    public ResponseEntity<APIResponse<List<LearnerDTO>>> searchLearner(@RequestParam String name) {
+        try {
+            List<LearnerDTO> learnerDTOs = learnerService.getLearnerByName(name);
+            APIResponse<List<LearnerDTO>> response = new APIResponse<>(
+                    "success",
+                    "Learners retrieved successfully",
+                    learnerDTOs,
+                    null,
+                    LocalDateTime.now()
+            );
+            return ResponseEntity.ok(response);
+        } catch (ResourceNotFoundException ex) {
+            APIResponse<List<LearnerDTO>> response = new APIResponse<>(
+                    "error",
+                    "Learners search failed",
+                    null,
+                    Map.of("error", ex.getMessage()),
+                    LocalDateTime.now()
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
 
     //tạo learner
     @PostMapping()
     public ResponseEntity<APIResponse<LearnerDTO>> createLearner(@Valid @RequestBody LearnerDTO learnerDTO) {
-        LearnerDTO created = learnerService.createLearner(learnerDTO);
-        APIResponse<LearnerDTO> response = new APIResponse<>(
-                "success",
-                "Learner created successfully",
-                created,
-                null,
-                LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        try {
+            LearnerDTO created = learnerService.createLearner(learnerDTO);
+            APIResponse<LearnerDTO> response = new APIResponse<>(
+                    "success",
+                    "Learner created successfully",
+                    created,
+                    null,
+                    LocalDateTime.now());
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }catch (ConstraintViolationException ex){
+            APIResponse<LearnerDTO> response = new APIResponse<>(
+                    "error",
+                    "Learners search failed",
+                    null,
+                    Map.of("error", ex.getMessage()),
+                    LocalDateTime.now()
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
     }
 
     //chỉnh sửa learner
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<LearnerDTO>> updateLearner(@PathVariable String id, @RequestBody LearnerDTO learnerDTO) {
         LearnerDTO updated = learnerService.updateLearner(learnerDTO, id);
         APIResponse<LearnerDTO> response = new APIResponse<>(
@@ -120,7 +168,6 @@ public class LearnerController {
 
     //xóa learner
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<Void>> deleteLearner(@PathVariable String id) {
         learnerService.deleteLearner(id);
         APIResponse<Void> response = new APIResponse<>(

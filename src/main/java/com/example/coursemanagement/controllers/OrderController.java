@@ -1,5 +1,6 @@
 package com.example.coursemanagement.controllers;
 
+import com.example.coursemanagement.enums.OrderStatus;
 import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.models.dto.OrderDTO;
 import com.example.coursemanagement.services.OrderService;
@@ -62,9 +63,9 @@ public class OrderController {
     }
 
     //chỉnh sửa order
-    @PutMapping("/{id}")
-    public ResponseEntity<APIResponse<OrderDTO>> updateOrder(@PathVariable String id, @RequestBody OrderDTO orderDTO) {
-        OrderDTO updated = orderService.updateOrder(orderDTO, id);
+    @PutMapping("/{id}/status")
+    public ResponseEntity<APIResponse<OrderDTO>> updateOrder(@PathVariable String id, @RequestParam OrderStatus status) {
+        OrderDTO updated = orderService.updateOrder(id, status);
         APIResponse<OrderDTO> response = new APIResponse<>(
                 "success",
                 "Order updated successfully",

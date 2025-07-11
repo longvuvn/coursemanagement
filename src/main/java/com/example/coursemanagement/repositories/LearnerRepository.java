@@ -1,5 +1,6 @@
 package com.example.coursemanagement.repositories;
 
+import com.example.coursemanagement.enums.UserStatus;
 import com.example.coursemanagement.models.Learner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +23,6 @@ public interface LearnerRepository extends JpaRepository<Learner, UUID> {
     //tìm kiếm learner theo tên
     @Query("SELECT l FROM Learner l WHERE LOWER(l.fullName) LIKE LOWER(CONCAT('%', :name, '%'))")
     List<Learner> findLearnerByName(@Param("name") String name);
+
+    Page<Learner> findByStatus(UserStatus status, Pageable pageable);
 }

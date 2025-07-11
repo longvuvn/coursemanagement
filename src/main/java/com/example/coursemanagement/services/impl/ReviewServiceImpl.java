@@ -10,11 +10,10 @@ import com.example.coursemanagement.repositories.LearnerRepository;
 import com.example.coursemanagement.repositories.ReviewRepository;
 import com.example.coursemanagement.services.CourseService;
 import com.example.coursemanagement.services.ReviewService;
+import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,7 +41,8 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewDTO getReviewById(String id) {
         UUID uuid = UUID.fromString(id);
         Optional<Review> optionalReview = reviewRepository.findById(uuid);
-        return optionalReview.map(review -> modelMapper.map(review, ReviewDTO.class)).orElse(null);
+        return optionalReview.map(review -> modelMapper.map(review, ReviewDTO.class))
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Review"));
     }
 
     @Override
@@ -50,9 +50,10 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = modelMapper.map(reviewDTO, Review.class);
         UUID learner_Id = UUID.fromString(reviewDTO.getLearnerId());
         UUID course_Id = UUID.fromString(reviewDTO.getCourseId());
-        Course course = courseRepository.findById(course_Id).orElse(null);
-        Learner learner = learnerRepository.findById(learner_Id).orElse(null);
-        review.setComment(reviewDTO.getComment());
+        Course course = courseRepository.findById(course_Id)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Course"));
+        Learner learner = learnerRepository.findById(learner_Id)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Learner"));
         review.setRating(Integer.parseInt(reviewDTO.getRating()));
         review.setLearner(learner);
         review.setStatus(ReviewStatus.APPROVED);
@@ -65,7 +66,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ReviewDTO updateReview(ReviewDTO reviewDTO, String id) {
         UUID uuid = UUID.fromString(id);
-        Review existingReview = reviewRepository.findById(uuid).orElse(null);
+        Review existingReview = reviewRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Review"));
         existingReview.setComment(reviewDTO.getComment());
         existingReview.setRating(Integer.parseInt(reviewDTO.getRating()));
         return modelMapper.map(reviewRepository.save(existingReview), ReviewDTO.class);
@@ -74,7 +76,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void deleteReview(String id) {
         UUID uuid = UUID.fromString(id);
-        Review existingReview = reviewRepository.findById(uuid).orElse(null);
+        Review existingReview = reviewRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Review"));
         reviewRepository.delete(existingReview);
     }
 }
