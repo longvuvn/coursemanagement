@@ -1,9 +1,8 @@
-package com.example.coursemanagement.services.impl;
+package com.example.coursemanagement.config;
 
 import com.example.coursemanagement.models.User;
 import com.example.coursemanagement.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 

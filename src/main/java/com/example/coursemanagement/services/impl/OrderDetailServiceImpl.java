@@ -8,6 +8,7 @@ import com.example.coursemanagement.repositories.CourseRepository;
 import com.example.coursemanagement.repositories.OrderDetailRepository;
 import com.example.coursemanagement.repositories.OrderRepository;
 import com.example.coursemanagement.services.OrderDetailService;
+import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -47,8 +48,10 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         UUID orderUUID = UUID.fromString(orderDetailDTO.getOrderId());
         UUID courseId = UUID.fromString(orderDetailDTO.getCourseId());
 
-        Order order = orderRepository.findById(orderUUID).orElse(null);
-        Course course = courseRepository.findById(courseId).orElse(null);
+        Order order = orderRepository.findById(orderUUID)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Order"));
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Course"));
 
         OrderDetail orderDetail = modelMapper.map(orderDetailDTO, OrderDetail.class);
         orderDetail.setOrder(order);
@@ -60,7 +63,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
     public OrderDetailDTO updateOrderDetail(OrderDetailDTO orderDetailDTO, String id) {
         UUID uuid = UUID.fromString(id);
-        OrderDetail existingOrderDetail = orderDetailRepository.findById(uuid).orElse(null);
+        OrderDetail existingOrderDetail = orderDetailRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This OrderDetail"));
         existingOrderDetail
                 .setPriceAtPurchase(BigDecimal.valueOf(Double.parseDouble(orderDetailDTO.getPriceAtPurchase())));
         return modelMapper.map(orderDetailRepository.save(existingOrderDetail), OrderDetailDTO.class);
@@ -69,7 +73,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
     public void deleteOrderDetail(String id) {
         UUID uuid = UUID.fromString(id);
-        OrderDetail existingOrderDetail = orderDetailRepository.findById(uuid).orElse(null);
+        OrderDetail existingOrderDetail = orderDetailRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This OrderDetail"));
         orderDetailRepository.delete(existingOrderDetail);
     }
 

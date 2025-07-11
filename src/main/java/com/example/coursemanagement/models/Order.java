@@ -19,6 +19,7 @@ public class Order extends Auditing{
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     @ManyToOne

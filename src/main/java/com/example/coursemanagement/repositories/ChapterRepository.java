@@ -1,5 +1,6 @@
 package com.example.coursemanagement.repositories;
 
+import com.example.coursemanagement.enums.ChapterStatus;
 import com.example.coursemanagement.models.Chapter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +16,6 @@ public interface ChapterRepository extends JpaRepository<Chapter, UUID> {
     @Query("SELECT c FROM Chapter c WHERE LOWER(c.title) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<Chapter> findChapterByTitle(@Param("title") String title);
 
+    //lấy tất cả chapter active
+    List<Chapter> findByStatus(ChapterStatus status);
 }

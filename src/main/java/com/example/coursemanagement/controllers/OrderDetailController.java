@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/order_details")
+@RequestMapping("/api/v1/order-details")
 @RequiredArgsConstructor
 public class OrderDetailController {
 

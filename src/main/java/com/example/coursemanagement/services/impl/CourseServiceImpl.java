@@ -11,6 +11,7 @@ import com.example.coursemanagement.repositories.CourseRepository;
 import com.example.coursemanagement.repositories.ReviewRepository;
 import com.example.coursemanagement.services.ChapterService;
 import com.example.coursemanagement.services.CourseService;
+import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -37,19 +38,18 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Pagination<CourseDTO> getAllCourses(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Course> coursePages = courseRepository.findAll(pageable);
+        Page<Course> coursePage = courseRepository.findByStatus(CourseStatus.ACTIVE, pageable);
 
-        List<CourseDTO> courseDTOS = coursePages.getContent().stream()
+        List<CourseDTO> courseDTOS = coursePage.getContent().stream()
                 .map(course -> modelMapper.map(course, CourseDTO.class) )
                 .collect(Collectors.toList());
 
         Pagination<CourseDTO> pagination = new Pagination<>();
-        pagination.setSize(coursePages.getNumber());
-        pagination.setSize(coursePages.getSize());
-        pagination.setTotalPages(coursePages.getTotalPages());
-        pagination.setTotalElements(coursePages.getTotalElements());
+        pagination.setSize(coursePage.getNumber());
+        pagination.setSize(coursePage.getSize());
+        pagination.setTotalPages(coursePage.getTotalPages());
+        pagination.setTotalElements(coursePage.getTotalElements());
         pagination.setContent(courseDTOS);
-
         return pagination;
     }
 
@@ -57,7 +57,8 @@ public class CourseServiceImpl implements CourseService {
     public CourseDTO getCourseById(String id) {
         UUID uuid = UUID.fromString(id);
         Optional<Course> optionalCourse = courseRepository.findById(uuid);
-        CourseDTO courseDTO = optionalCourse.map(course -> modelMapper.map(course, CourseDTO.class)).orElse(null);
+        CourseDTO courseDTO = optionalCourse.map(course -> modelMapper.map(course, CourseDTO.class))
+                .orElseThrow(() -> new ResourceNotFoundException("không tìm thấy khóa học"));
         List<ChapterDTO> chapterDTO = chapterService.getChaptersByCourseId(uuid.toString());
         courseDTO.setChapters(chapterDTO);
         return courseDTO;
@@ -67,14 +68,8 @@ public class CourseServiceImpl implements CourseService {
     public CourseDTO createCourse(CourseDTO courseDTO) {
         Course course = modelMapper.map(courseDTO, Course.class);
         Category category = categoryRepository.findByName(courseDTO.getCategoryName());
-        course.setTitle(courseDTO.getTitle());
-        course.setDescription(courseDTO.getDescription());
         course.setCategory(category);
-        course.setPrice(new BigDecimal(courseDTO.getPrice()));
         course.setStatus(CourseStatus.ACTIVE);
-        course.setImage(courseDTO.getImage());
-        course.setTotalReviews(0);
-        course.setAverageRating(0.0);
         Course savedCourse = courseRepository.save(course);
         return modelMapper.map(savedCourse, CourseDTO.class);
     }
@@ -83,40 +78,40 @@ public class CourseServiceImpl implements CourseService {
     public CourseDTO updateCourse(CourseDTO courseDTO, String id) {
         UUID uuid = UUID.fromString(id);
         Category category = categoryRepository.findByName(courseDTO.getCategoryName());
-        Course existingCourse = courseRepository.findById(uuid).orElse(null);
-        existingCourse.setTitle(courseDTO.getTitle());
+        Course existingCourse = courseRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Course"));
+        modelMapper.map(courseDTO, existingCourse);
         existingCourse.setCategory(category);
-        existingCourse.setPrice(new BigDecimal(courseDTO.getPrice()));
-        existingCourse.setDescription(courseDTO.getDescription());
-        existingCourse.setImage(courseDTO.getImage());
-        existingCourse.setStatus(CourseStatus.valueOf(courseDTO.getStatus()));
-        existingCourse.setTotalReviews(courseDTO.getTotalReviews());
-        return modelMapper.map(courseRepository.save(existingCourse), CourseDTO.class);
+        Course updatedCourse = courseRepository.save(existingCourse);
+        return modelMapper.map(updatedCourse, CourseDTO.class);
     }
 
     @Override
     public void deleteCourse(String id) {
         UUID uuid = UUID.fromString(id);
-        Course existingCourse = courseRepository.findById(uuid).orElse(null);
+        Course existingCourse = courseRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Course"));
         courseRepository.delete(existingCourse);
     }
 
     @Override
     public CourseDTO updateTotalRating(String courseId) {
-
         UUID courseUUID = UUID.fromString(courseId);
-        Course course = courseRepository.findById(courseUUID).orElse(null);
+        Course course = courseRepository.findById(courseUUID)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This Course"));
         int totalRating = reviewRepository.sumRatingByCourseId(courseUUID);
         int totalReviews = reviewRepository.countReviewsByCourseId(courseUUID);
         course.setTotalReviews(totalReviews);
         course.setAverageRating(totalReviews == 0 ? 0.0 : (double) totalRating / totalReviews);
         courseRepository.save(course);
         return modelMapper.map(course, CourseDTO.class);
-
     }
     @Override
     public List<CourseDTO> getCoursesByLearnerId(UUID learnerId) {
         List<Course> courseList = courseRepository.findCoursesByLearnerId(learnerId);
+        if(courseList.isEmpty()){
+            throw new ResourceNotFoundException("Learner doesn't have this course");
+        }
         return courseList.stream()
                 .map(course -> modelMapper.map(course, CourseDTO.class) )
                 .collect(Collectors.toList());
@@ -163,5 +158,5 @@ public class CourseServiceImpl implements CourseService {
         pagination.setContent(courseDTOS);
 
         return pagination;
-     }
+    }
 }

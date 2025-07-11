@@ -3,14 +3,15 @@ package com.example.coursemanagement.controllers;
 import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.models.dto.AdminDTO;
 import com.example.coursemanagement.services.AdminService;
+import com.example.coursemanagement.services.exceptions.errors.UnauthorizedException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/admins")
@@ -21,21 +22,29 @@ public class AdminController {
 
     //lấy tất cả Admin
     @GetMapping()
-    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<List<AdminDTO>>> getAllAdmins() {
-        List<AdminDTO> admins = adminService.getAllAdmins();
-        APIResponse<List<AdminDTO>> response = new APIResponse<>(
-                "success",
-                "Admins retrieved successfully",
-                admins,
-                null,
-                LocalDateTime.now());
-        return ResponseEntity.ok(response);
+        try{
+            List<AdminDTO> admins = adminService.getAllAdmins();
+            APIResponse<List<AdminDTO>> response = new APIResponse<>(
+                    "success",
+                    "Admins retrieved successfully",
+                    admins,
+                    null,
+                    LocalDateTime.now());
+            return ResponseEntity.ok(response);
+        }catch(UnauthorizedException ex){
+            APIResponse<List<AdminDTO>> response = new APIResponse<>(
+                    "error",
+                    "Admins retrieved error",
+                    null,
+                    Map.of("error", "You are not authorized to access this resource. Please login to access this resource."),
+                    LocalDateTime.now());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
     }
 
     //lấy Admin theo id
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<AdminDTO>> getAdminById(@PathVariable String id) {
         AdminDTO admin = adminService.getAdminById(id);
         APIResponse<AdminDTO> response = new APIResponse<>(
@@ -62,7 +71,6 @@ public class AdminController {
 
     //chỉnh sửa Admin
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<AdminDTO>> updateUser(@PathVariable String id, @RequestBody AdminDTO adminDTO) {
         AdminDTO updated = adminService.updateAdmin(adminDTO, id);
         APIResponse<AdminDTO> response = new APIResponse<>(
@@ -76,7 +84,6 @@ public class AdminController {
 
     //Xóa Admin
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<APIResponse<Void>> deleteUser(@PathVariable String id) {
         adminService.deleteAdmin(id);
         APIResponse<Void> response = new APIResponse<>(

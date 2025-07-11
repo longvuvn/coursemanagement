@@ -1,5 +1,7 @@
 package com.example.coursemanagement.repositories;
 
+
+import com.example.coursemanagement.enums.LessonStatus;
 import com.example.coursemanagement.models.Lesson;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,4 +15,7 @@ public interface LessonRepository extends JpaRepository<Lesson, UUID> {
     //tim kiếm lesson theo title
     @Query("SELECT l FROM Lesson l WHERE LOWER(l.title) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<Lesson> findLessonByTitle(@Param("title") String title);
+
+    //lấy tất cả chapter active
+    List<Lesson> findByStatus(LessonStatus status);
 }

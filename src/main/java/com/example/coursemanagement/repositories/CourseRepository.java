@@ -1,5 +1,6 @@
 package com.example.coursemanagement.repositories;
 
+import com.example.coursemanagement.enums.CourseStatus;
 import com.example.coursemanagement.models.Course;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,4 +24,6 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
     @Query("SELECT c FROM Course c JOIN c.category a WHERE a.name = :categoryName")
     Page<Course> findCourseByCategoryName(@Param("categoryName") String categoryName, Pageable pageable);
 
+    //lấy tất cả khóa học theo status
+    Page<Course> findByStatus(CourseStatus status, Pageable pageable);
 }

@@ -30,7 +30,7 @@ public class Course extends Auditing{
     private String title;
 
     @NotNull(message = "Giá không được để trống")
-    @DecimalMin(value = "0.0", inclusive = false, message = "Giá phải lớn hơn 0.0")
+    @DecimalMin(value = "0.0", inclusive = true, message = "Giá không được âm")
     @Column(nullable = false)
     private BigDecimal price;
 

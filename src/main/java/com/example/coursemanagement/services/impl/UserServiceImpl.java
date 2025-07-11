@@ -5,11 +5,12 @@ import com.example.coursemanagement.models.User;
 import com.example.coursemanagement.models.dto.UserDTO;
 import com.example.coursemanagement.repositories.UserRepository;
 import com.example.coursemanagement.services.UserService;
+import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.time.Instant;
+import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,18 +38,17 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUserById(String id) {
         UUID uuid = UUID.fromString(id);
         Optional<User> optionalUser  = userRepository.findById(uuid);
-        return optionalUser.map(user-> modelMapper.map(user, UserDTO.class)).orElse(null);
+        return optionalUser.map(user-> modelMapper.map(user, UserDTO.class))
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This User"));
     }
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
-        if(userDTO.getAvatar() == null || userDTO.getAvatar().isEmpty()){
+        if(StringUtils.hasText(userDTO.getAvatar())){
             userDTO.setAvatar(DEFAULT_AVATAR_PATH);
         }
         Role role = roleService.getRoleByName("Learner");
-        user.setFullName(userDTO.getFullName());
-        user.setEmail(userDTO.getEmail());
         user.setRole(role);
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
@@ -60,12 +60,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO updateUser(UserDTO userDTO, String id) {
         UUID uuid = UUID.fromString(id);
-        User existingUser = userRepository.findById(uuid).orElse(null);
-        existingUser.setFullName(userDTO.getFullName());
-        existingUser.setEmail(userDTO.getEmail());
+        User existingUser = userRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This User"));
+        modelMapper.map(userDTO, existingUser);
         existingUser.setRole(roleService.getRoleByName(userDTO.getRoleName()));
-        existingUser.setPhoneNumber(userDTO.getPhoneNumber());
-        existingUser.setAvatar(userDTO.getAvatar());
         existingUser.setStatus(UserStatus.valueOf(userDTO.getStatus()));
         User updatedUser = userRepository.save(existingUser);
         return modelMapper.map(updatedUser, UserDTO.class);
@@ -74,7 +72,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String id) {
         UUID uuid = UUID.fromString(id);
-        User existingUser = userRepository.findById(uuid).orElse(null);
+        User existingUser = userRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not Found This User"));
         userRepository.delete(existingUser);
     }
 }
