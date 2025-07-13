@@ -18,37 +18,65 @@ public class GlobalException {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<APIResponse<Object>> handleBadRequestException(BadRequestException e) {
-        return buildErrorResponse("Bad Request", e.getMessage(), HttpStatus.BAD_REQUEST, "Yêu cầu không hợp lệ");
+        return buildErrorResponse("Bad Request",
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST,
+                "Yêu cầu không hợp lệ"
+        );
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<APIResponse<Object>> handleDuplicateResourceException(DuplicateResourceException e) {
-        return buildErrorResponse("Conflict", e.getMessage(), HttpStatus.CONFLICT, "Tài nguyên bị trùng");
+        return buildErrorResponse("Conflict",
+                e.getMessage(),
+                HttpStatus.CONFLICT,
+                "Tài nguyên bị trùng"
+        );
     }
 
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<APIResponse<Object>> handleForbiddenException(ForbiddenException e) {
-        return buildErrorResponse("Forbidden", e.getMessage(), HttpStatus.FORBIDDEN, "Truy cập bị từ chối");
+        return buildErrorResponse("Forbidden",
+                e.getMessage(),
+                HttpStatus.FORBIDDEN,
+                "Truy cập bị từ chối"
+        );
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<APIResponse<Object>> handleResourceNotFoundException(ResourceNotFoundException e) {
-        return buildErrorResponse("Not Found", e.getMessage(), HttpStatus.NOT_FOUND, "Không tìm thấy dữ liệu");
+        return buildErrorResponse("Not Found",
+                e.getMessage(),
+                HttpStatus.NOT_FOUND,
+                "Không tìm thấy dữ liệu"
+        );
     }
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<APIResponse<Object>> handleUnauthorizedException(UnauthorizedException e) {
-        return buildErrorResponse("Unauthorized", e.getMessage(), HttpStatus.UNAUTHORIZED, "Không có quyền truy cập");
+        return buildErrorResponse("Unauthorized",
+                e.getMessage(),
+                HttpStatus.UNAUTHORIZED,
+                "Không có quyền truy cập"
+        );
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<APIResponse<Object>> handleAccessDeniedException(AccessDeniedException e) {
-        return buildErrorResponse("Access Denied", e.getMessage(), HttpStatus.FORBIDDEN, "Bạn không có quyền thực hiện hành động này");
+        return buildErrorResponse("Access Denied",
+                e.getMessage(),
+                HttpStatus.FORBIDDEN,
+                "Bạn không có quyền thực hiện hành động này"
+        );
     }
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<APIResponse<Object>> handleValidationException(ValidationException e) {
-        return buildErrorResponse("Validation Failed", e.getMessage(), HttpStatus.BAD_REQUEST, "Dữ liệu không hợp lệ");
+        return buildErrorResponse("Validation Failed",
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST,
+                "Dữ liệu không hợp lệ"
+        );
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
