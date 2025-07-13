@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +28,7 @@ public class LearnerController {
 
     //Get All Learners
     @GetMapping()
-    public ResponseEntity<APIResponse<Pagination<LearnerDTO>>> getAllLearners(
+    public ResponseEntity<APIResponse<Pagination<LearnerDTO>>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
@@ -47,9 +46,9 @@ public class LearnerController {
         }catch (ResourceNotFoundException ex){
             APIResponse<Pagination<LearnerDTO>> response = new APIResponse<>(
                     "error",
-                    "Learners retrieved false",
+                    "Learners retrieved failed",
                     null,
-                    Map.of("Error", ex.getMessage()),
+                    Map.of("error", ex.getMessage()),
                     LocalDateTime.now()
             );
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
@@ -58,7 +57,7 @@ public class LearnerController {
 
     //lấy learners theo Id
     @GetMapping("/{id}")
-    public ResponseEntity<APIResponse<LearnerDTO>> getLearnerById(@PathVariable String id) {
+    public ResponseEntity<APIResponse<LearnerDTO>> getById(@PathVariable String id) {
         try {
             LearnerDTO learnerDTO = learnerService.getLearnerById(id);
             APIResponse<LearnerDTO> response = new APIResponse<>(
@@ -81,7 +80,7 @@ public class LearnerController {
 
     //lấy tất cả courses của learners
     @GetMapping("/{id}/courses")
-    public ResponseEntity<APIResponse<List<CourseDTO>>> getLearnersCourses(@PathVariable UUID id) {
+    public ResponseEntity<APIResponse<List<CourseDTO>>> getCourses(@PathVariable UUID id) {
         try {
             List<CourseDTO> courseDTOList = courseService.getCoursesByLearnerId(id);
             APIResponse<List<CourseDTO>> response = new APIResponse<>(
@@ -106,7 +105,7 @@ public class LearnerController {
 
     //tìm kiếm learners theo name
     @GetMapping("/search")
-    public ResponseEntity<APIResponse<List<LearnerDTO>>> searchLearner(@RequestParam String name) {
+    public ResponseEntity<APIResponse<List<LearnerDTO>>> search(@RequestParam String name) {
         try {
             List<LearnerDTO> learnerDTOs = learnerService.getLearnerByName(name);
             APIResponse<List<LearnerDTO>> response = new APIResponse<>(
@@ -131,7 +130,7 @@ public class LearnerController {
 
     //tạo learner
     @PostMapping()
-    public ResponseEntity<APIResponse<LearnerDTO>> createLearner(@Valid @RequestBody LearnerDTO learnerDTO) {
+    public ResponseEntity<APIResponse<LearnerDTO>> create(@Valid @RequestBody LearnerDTO learnerDTO) {
         try {
             LearnerDTO created = learnerService.createLearner(learnerDTO);
             APIResponse<LearnerDTO> response = new APIResponse<>(
@@ -155,27 +154,47 @@ public class LearnerController {
 
     //chỉnh sửa learner
     @PutMapping("/{id}")
-    public ResponseEntity<APIResponse<LearnerDTO>> updateLearner(@PathVariable String id, @RequestBody LearnerDTO learnerDTO) {
-        LearnerDTO updated = learnerService.updateLearner(learnerDTO, id);
-        APIResponse<LearnerDTO> response = new APIResponse<>(
-                "success",
-                "Learner updated successfully",
-                updated,
-                null,
-                LocalDateTime.now());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<APIResponse<LearnerDTO>> update(@PathVariable String id, @RequestBody LearnerDTO learnerDTO) {
+        try{
+            LearnerDTO updated = learnerService.updateLearner(learnerDTO, id);
+            APIResponse<LearnerDTO> response = new APIResponse<>(
+                    "success",
+                    "Learner updated successfully",
+                    updated,
+                    null,
+                    LocalDateTime.now());
+            return ResponseEntity.ok(response);
+        }catch (ResourceNotFoundException ex){
+            APIResponse<LearnerDTO> response = new APIResponse<>(
+                    "error",
+                    "Learner updated failed",
+                    null,
+                    Map.of("error", ex.getMessage()),
+                    LocalDateTime.now());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
 
     //xóa learner
     @DeleteMapping("/{id}")
-    public ResponseEntity<APIResponse<Void>> deleteLearner(@PathVariable String id) {
-        learnerService.deleteLearner(id);
-        APIResponse<Void> response = new APIResponse<>(
-                "success",
-                "Learner deleted successfully",
-                null,
-                null,
-                LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    public ResponseEntity<APIResponse<Void>> delete(@PathVariable String id) {
+        try{
+            learnerService.deleteLearner(id);
+            APIResponse<Void> response = new APIResponse<>(
+                    "success",
+                    "Learner deleted successfully",
+                    null,
+                    null,
+                    LocalDateTime.now());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+        }catch (ResourceNotFoundException ex){
+            APIResponse<Void> response = new APIResponse<>(
+                    "error",
+                    "Learner deleted failed",
+                    null,
+                    Map.of("error", ex.getMessage()),
+                    LocalDateTime.now());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
 }

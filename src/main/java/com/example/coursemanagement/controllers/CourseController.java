@@ -6,6 +6,7 @@ import com.example.coursemanagement.models.dto.CourseDTO;
 import com.example.coursemanagement.models.dto.LearnerDTO;
 import com.example.coursemanagement.services.CourseService;
 import com.example.coursemanagement.services.LearnerService;
+import com.example.coursemanagement.services.exceptions.errors.BadRequestException;
 import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class CourseController {
 
     //lấy tất cả khóa học có status là Active
     @GetMapping()
-    public ResponseEntity<APIResponse<Pagination<CourseDTO>>> getActiveCourses(
+    public ResponseEntity<APIResponse<Pagination<CourseDTO>>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ){
@@ -51,13 +52,13 @@ public class CourseController {
                     Map.of("không tìm thấy dữ liệu", "thử lại"),
                     LocalDateTime.now()
             );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     //lấy tất cả courses theo categoryName
     @GetMapping("/categoryName")
-    public ResponseEntity<APIResponse<Pagination<CourseDTO>>> getCoursesByCategoryName(
+    public ResponseEntity<APIResponse<Pagination<CourseDTO>>> getByCategoryName(
             @RequestParam String categoryName,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
@@ -75,9 +76,9 @@ public class CourseController {
         }catch (ResourceNotFoundException ex){
             APIResponse<Pagination<CourseDTO>> response = new APIResponse<>(
                     "error",
-                    "Courses retrieved false",
+                    "Courses retrieved failed",
                     null,
-                    Map.of("Không tìm thấy dữ liệu", "thử lại"),
+                    Map.of("error", ex.getMessage()),
                     LocalDateTime.now()
             );
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
@@ -86,7 +87,7 @@ public class CourseController {
 
     //lấy course theo Id
     @GetMapping("/{id}")
-    public ResponseEntity<APIResponse<CourseDTO>> getCourseById(@PathVariable String id) {
+    public ResponseEntity<APIResponse<CourseDTO>> getById(@PathVariable String id) {
         try{
             CourseDTO course = courseService.getCourseById(id);
             APIResponse<CourseDTO> response = new APIResponse<>(
@@ -100,9 +101,9 @@ public class CourseController {
         }catch (ResourceNotFoundException ex){
             APIResponse<CourseDTO> response = new APIResponse<>(
                     "error",
-                    "Courses retrieved false",
+                    "Courses retrieved failed",
                     null,
-                    Map.of("error", "không tìm thấy khóa học"),
+                    Map.of("error", ex.getMessage()),
                     LocalDateTime.now()
             );
 
@@ -126,9 +127,9 @@ public class CourseController {
         }catch (ResourceNotFoundException ex){
             APIResponse<List<LearnerDTO>> response = new APIResponse<>(
                     "error",
-                    "Learners retrieved false",
+                    "Learners retrieved failed",
                     null,
-                    Map.of("Không tìm thấy dữ liệu", "Thử lại"),
+                    Map.of("error", ex.getMessage()),
                     LocalDateTime.now()
             );
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
@@ -137,7 +138,7 @@ public class CourseController {
 
     //tìm kiếm course theo title
     @GetMapping("/search")
-    public ResponseEntity<APIResponse<List<CourseDTO>>> searchCourse (@RequestParam String title){
+    public ResponseEntity<APIResponse<List<CourseDTO>>> search (@RequestParam String title){
         try{
             List<CourseDTO> courseDTOList = courseService.getCoursesByTitle(title);
             APIResponse<List<CourseDTO>> response = new APIResponse<>(
@@ -151,9 +152,9 @@ public class CourseController {
         }catch (ResourceNotFoundException ex){
             APIResponse<List<CourseDTO>> response = new APIResponse<>(
                     "error",
-                    "Courses retrieved false",
+                    "Courses not found",
                     null,
-                    Map.of("Không tìm thấy dữ liệu", "Thử lại"),
+                    Map.of("error", ex.getMessage()),
                     LocalDateTime.now()
             );
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
@@ -162,7 +163,7 @@ public class CourseController {
 
     //lấy course mới nhất
     @GetMapping("/latest")
-    public ResponseEntity<APIResponse<List<CourseDTO>>> getLatestCourses() {
+    public ResponseEntity<APIResponse<List<CourseDTO>>> getLatest() {
         try{
             List<CourseDTO> courses = courseService.getLatestCourses();
             APIResponse<List<CourseDTO>> response = new APIResponse<>(
@@ -176,9 +177,9 @@ public class CourseController {
         }catch (ResourceNotFoundException ex){
             APIResponse<List<CourseDTO>> response = new APIResponse<>(
                     "error",
-                    "Courses retrieved false",
+                    "Courses retrieved failed",
                     null,
-                    Map.of("Không tìm thấy dữ liệu", "Thử lại"),
+                    Map.of("error", ex.getMessage()),
                     LocalDateTime.now()
             );
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
@@ -187,7 +188,7 @@ public class CourseController {
 
     //lấy khóa học cũ nhất
     @GetMapping("/oldest")
-    public ResponseEntity<APIResponse<List<CourseDTO>>> getOldestCourses() {
+    public ResponseEntity<APIResponse<List<CourseDTO>>> getOldest() {
         try{
             List<CourseDTO> courses = courseService.getOldestCourses();
             APIResponse<List<CourseDTO>> response = new APIResponse<>(
@@ -201,9 +202,9 @@ public class CourseController {
         }catch (ResourceNotFoundException ex){
             APIResponse<List<CourseDTO>> response = new APIResponse<>(
                     "error",
-                    "Courses retrieved false",
+                    "Courses retrieved failed",
                     null,
-                    Map.of("Không tìm thấy dữ liệu", "thử lại"),
+                    Map.of("error", ex.getMessage()),
                     LocalDateTime.now()
             );
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
@@ -212,7 +213,7 @@ public class CourseController {
 
     //tạo course
     @PostMapping
-    public ResponseEntity<APIResponse<CourseDTO>> createCourse(@Valid @RequestBody CourseDTO courseDTO) {
+    public ResponseEntity<APIResponse<CourseDTO>> create(@Valid @RequestBody CourseDTO courseDTO) {
         try{
             CourseDTO created = courseService.createCourse(courseDTO);
             APIResponse<CourseDTO> response = new APIResponse<>(
@@ -223,21 +224,21 @@ public class CourseController {
                     LocalDateTime.now()
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        }catch (ResourceNotFoundException ex){
+        }catch (BadRequestException ex){
             APIResponse<CourseDTO> response = new APIResponse<>(
                     "error",
-                    "Course created false",
+                    "Course created failed",
                     null,
-                    Map.of("Error", "Không tìm thấy dữ liệu"),
+                    Map.of("error", ex.getMessage()),
                     LocalDateTime.now()
             );
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
     //chỉnh sửa course
     @PutMapping("/{id}")
-    public ResponseEntity<APIResponse<CourseDTO>> updateCourse(@PathVariable String id, @RequestBody CourseDTO courseDTO) {
+    public ResponseEntity<APIResponse<CourseDTO>> update(@PathVariable String id, @RequestBody CourseDTO courseDTO) {
         try{
             CourseDTO updated = courseService.updateCourse(courseDTO, id);
             APIResponse<CourseDTO> response = new APIResponse<>(
@@ -251,9 +252,9 @@ public class CourseController {
         }catch (ResourceNotFoundException ex){
             APIResponse<CourseDTO> response = new APIResponse<>(
                     "error",
-                    "Course updated false",
+                    "Course updated failed",
                     null,
-                    Map.of("Error", "Không thể update"),
+                    Map.of("error", ex.getMessage()),
                     LocalDateTime.now()
             );
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
@@ -262,7 +263,7 @@ public class CourseController {
 
     //xóa course
     @DeleteMapping("/{id}")
-    public ResponseEntity<APIResponse<Void>> deleteCourse(@PathVariable String id) {
+    public ResponseEntity<APIResponse<Void>> delete(@PathVariable String id) {
         try{
             courseService.deleteCourse(id);
             APIResponse<Void> response = new APIResponse<>(
@@ -276,9 +277,9 @@ public class CourseController {
         }catch (ResourceNotFoundException ex){
             APIResponse<Void> response = new APIResponse<>(
                     "error",
-                    "Course deleted false",
+                    "Course deleted failed",
                     null,
-                    Map.of("Không tìm thấy dữ liệu", "thử lại"),
+                    Map.of("error", ex.getMessage()),
                     LocalDateTime.now()
             );
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
