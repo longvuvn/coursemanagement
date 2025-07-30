@@ -1,6 +1,5 @@
 package com.example.coursemanagement.services.exceptions;
 
-import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.services.exceptions.errors.*;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -17,70 +16,42 @@ import java.util.Map;
 public class GlobalException {
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<APIResponse<Object>> handleBadRequestException(BadRequestException e) {
-        return buildErrorResponse("Bad Request",
-                e.getMessage(),
-                HttpStatus.BAD_REQUEST,
-                "Yêu cầu không hợp lệ"
-        );
+    public ResponseEntity<Map<String, Object>> handleBadRequestException(BadRequestException e) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), "Yêu cầu không hợp lệ");
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<APIResponse<Object>> handleDuplicateResourceException(DuplicateResourceException e) {
-        return buildErrorResponse("Conflict",
-                e.getMessage(),
-                HttpStatus.CONFLICT,
-                "Tài nguyên bị trùng"
-        );
+    public ResponseEntity<Map<String, Object>> handleDuplicateResourceException(DuplicateResourceException e) {
+        return buildErrorResponse(HttpStatus.CONFLICT, e.getMessage(), "Tài nguyên bị trùng");
     }
 
     @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<APIResponse<Object>> handleForbiddenException(ForbiddenException e) {
-        return buildErrorResponse("Forbidden",
-                e.getMessage(),
-                HttpStatus.FORBIDDEN,
-                "Truy cập bị từ chối"
-        );
+    public ResponseEntity<Map<String, Object>> handleForbiddenException(ForbiddenException e) {
+        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage(), "Truy cập bị từ chối");
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<APIResponse<Object>> handleResourceNotFoundException(ResourceNotFoundException e) {
-        return buildErrorResponse("Not Found",
-                e.getMessage(),
-                HttpStatus.NOT_FOUND,
-                "Không tìm thấy dữ liệu"
-        );
+    public ResponseEntity<Map<String, Object>> handleResourceNotFoundException(ResourceNotFoundException e) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage(), "Không tìm thấy dữ liệu");
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<APIResponse<Object>> handleUnauthorizedException(UnauthorizedException e) {
-        return buildErrorResponse("Unauthorized",
-                e.getMessage(),
-                HttpStatus.UNAUTHORIZED,
-                "Không có quyền truy cập"
-        );
+    public ResponseEntity<Map<String, Object>> handleUnauthorizedException(UnauthorizedException e) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage(), "Không có quyền truy cập");
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<APIResponse<Object>> handleAccessDeniedException(AccessDeniedException e) {
-        return buildErrorResponse("Access Denied",
-                e.getMessage(),
-                HttpStatus.FORBIDDEN,
-                "Bạn không có quyền thực hiện hành động này"
-        );
+    public ResponseEntity<Map<String, Object>> handleAccessDeniedException(AccessDeniedException e) {
+        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage(), "Bạn không có quyền thực hiện hành động này");
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<APIResponse<Object>> handleValidationException(ValidationException e) {
-        return buildErrorResponse("Validation Failed",
-                e.getMessage(),
-                HttpStatus.BAD_REQUEST,
-                "Dữ liệu không hợp lệ"
-        );
+    public ResponseEntity<Map<String, Object>> handleValidationException(ValidationException e) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), "Dữ liệu không hợp lệ");
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<APIResponse<Object>> handleConstraintViolationException(ConstraintViolationException ex) {
+    public ResponseEntity<Map<String, Object>> handleConstraintViolationException(ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getConstraintViolations().forEach(violation -> {
             String field = violation.getPropertyPath().toString();
@@ -88,24 +59,27 @@ public class GlobalException {
             errors.put(field, message);
         });
 
-        APIResponse<Object> response = new APIResponse<>(
-                "fail",
-                "Entity validation failed",
-                null,
-                errors,
-                LocalDateTime.now()
-        );
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("timestamp", LocalDateTime.now());
+        response.put("message", "Validation failed");
+        response.put("errors", errors);
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    private ResponseEntity<APIResponse<Object>> buildErrorResponse(String statusLabel, String message, HttpStatus status, String errorDescription) {
-        APIResponse<Object> response = new APIResponse<>(
-                "error",
-                message,
-                null,
-                Map.of("error", errorDescription),
-                LocalDateTime.now()
-        );
+    // Exception mặc định cho các lỗi chưa xử lý
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleGeneralException(Exception e) {
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), "Lỗi hệ thống");
+    }
+
+    private ResponseEntity<Map<String, Object>> buildErrorResponse(HttpStatus status, String message, String errorDescription) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", status.value());
+        response.put("timestamp", LocalDateTime.now());
+        response.put("message", message);
+        response.put("error", errorDescription);
         return ResponseEntity.status(status).body(response);
     }
 }

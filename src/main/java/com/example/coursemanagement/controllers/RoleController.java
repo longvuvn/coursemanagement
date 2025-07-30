@@ -1,20 +1,17 @@
 package com.example.coursemanagement.controllers;
 
-import com.example.coursemanagement.models.APIResponse;
+
 import com.example.coursemanagement.models.dto.RoleDTO;
 import com.example.coursemanagement.services.RoleService;
-import com.example.coursemanagement.services.exceptions.errors.BadRequestException;
-import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+
+
+
 
 @RestController
 @RequestMapping("/api/v1/roles")
