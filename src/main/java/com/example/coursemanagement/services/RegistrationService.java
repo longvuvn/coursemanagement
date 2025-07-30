@@ -6,12 +6,8 @@ import java.util.List;
 
 public interface RegistrationService {
     List<RegistrationDTO> getAllRegistrations();
-
     RegistrationDTO getRegistrationById(String id);
-
     RegistrationDTO createRegistration(RegistrationDTO registrationDTO);
-
     RegistrationDTO updateRegistration(RegistrationDTO registrationDTO, String id);
-
     void deleteRegistration(String id);
 }

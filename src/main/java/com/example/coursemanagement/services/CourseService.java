@@ -1,6 +1,5 @@
 package com.example.coursemanagement.services;
 
-import com.example.coursemanagement.enums.CourseStatus;
 import com.example.coursemanagement.models.Pagination;
 import com.example.coursemanagement.models.dto.CourseDTO;
 

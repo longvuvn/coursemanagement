@@ -79,5 +79,6 @@ public class ReviewServiceImpl implements ReviewService {
         Review existingReview = reviewRepository.findById(uuid)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found This Review"));
         reviewRepository.delete(existingReview);
+        courseService.updateTotalRating(String.valueOf(existingReview.getCourse().getId()));
     }
 }

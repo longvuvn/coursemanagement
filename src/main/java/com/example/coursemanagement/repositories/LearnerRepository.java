@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface LearnerRepository extends JpaRepository<Learner, UUID> {
@@ -25,4 +26,6 @@ public interface LearnerRepository extends JpaRepository<Learner, UUID> {
     List<Learner> findLearnerByName(@Param("name") String name);
 
     Page<Learner> findByStatus(UserStatus status, Pageable pageable);
+
+    Optional<Learner> findByEmail(String email);
 }

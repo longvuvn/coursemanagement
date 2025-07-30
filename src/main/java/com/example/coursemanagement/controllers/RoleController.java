@@ -25,126 +25,36 @@ public class RoleController {
 
     //lấy tất cả roles
     @GetMapping
-    public ResponseEntity<APIResponse<List<RoleDTO>>> getAll() {
-        try{
-            List<RoleDTO> roles = roleService.getAllRoles();
-            APIResponse<List<RoleDTO>> response = new APIResponse<>(
-                    "success",
-                    "Roles retrieved successfully",
-                    roles,
-                    null,
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.ok(response);
-        }catch (ResourceNotFoundException ex){
-            APIResponse<List<RoleDTO>> response = new APIResponse<>(
-                    "error",
-                    "Roles retrieved failed",
-                    null,
-                    Map.of("error", ex.getMessage() + " Please try again later."),
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+    public ResponseEntity<List<RoleDTO>> getAll() {
+        List<RoleDTO> roles = roleService.getAllRoles();
+        return ResponseEntity.status(HttpStatus.OK).body(roles);
     }
 
     //lấy role theo id
     @GetMapping("/{id}")
-    public ResponseEntity<APIResponse<RoleDTO>> getById(@PathVariable String id) {
-        try {
-            RoleDTO role = roleService.getRoleById(id);
-            APIResponse<RoleDTO> response = new APIResponse<>(
-                    "success",
-                    "Role retrieved successfully",
-                    role,
-                    null,
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.ok(response);
-        } catch (ResourceNotFoundException ex) {
-            APIResponse<RoleDTO> response = new APIResponse<>(
-                    "error",
-                    "Role not found",
-                    null,
-                    Map.of("error", ex.getMessage() + " Please try again later."),
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+    public ResponseEntity<RoleDTO> getById(@PathVariable String id) {
+        RoleDTO role = roleService.getRoleById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(role);
     }
 
     //tạo role
     @PostMapping
-    public ResponseEntity<APIResponse<RoleDTO>> create(@RequestBody @Valid RoleDTO roleDTO) {
-        try {
-            RoleDTO created = roleService.createRole(roleDTO);
-            APIResponse<RoleDTO> response = new APIResponse<>(
-                    "success",
-                    "Role created successfully",
-                    created,
-                    null,
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (BadRequestException ex) {
-            APIResponse<RoleDTO> response = new APIResponse<>(
-                    "error",
-                    "Role creation failed",
-                    null,
-                    Map.of("error", ex.getMessage() + " Please try again later."),
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+    public ResponseEntity<RoleDTO> create(@RequestBody @Valid RoleDTO roleDTO) {
+        RoleDTO created = roleService.createRole(roleDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     //chỉnh sửa role
     @PutMapping("/{id}")
-    public ResponseEntity<APIResponse<RoleDTO>> update(@PathVariable String id, @RequestBody RoleDTO roleDTO) {
-        try {
-            RoleDTO updated = roleService.updateRole(roleDTO, id);
-            APIResponse<RoleDTO> response = new APIResponse<>(
-                    "success",
-                    "Role updated successfully",
-                    updated,
-                    null,
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.ok(response);
-        } catch (ResourceNotFoundException ex) {
-            APIResponse<RoleDTO> response = new APIResponse<>(
-                    "error",
-                    "Role update failed",
-                    null,
-                    Map.of("error", ex.getMessage() + " Please try again later."),
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+    public ResponseEntity<RoleDTO> update(@PathVariable String id, @RequestBody RoleDTO roleDTO) {
+        RoleDTO updated = roleService.updateRole(roleDTO, id);
+        return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
     //xóa role
     @DeleteMapping("/{id}")
-    public ResponseEntity<APIResponse<Void>> delete(@PathVariable String id) {
-        try {
-            roleService.deleteRole(id);
-            APIResponse<Void> response = new APIResponse<>(
-                    "success",
-                    "Role deleted successfully",
-                    null,
-                    null,
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
-        } catch (ResourceNotFoundException ex) {
-            APIResponse<Void> response = new APIResponse<>(
-                    "error",
-                    "Role deletion failed",
-                    null,
-                    Map.of("error", ex.getMessage() + " Please try again later."),
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        roleService.deleteRole(id);
+        return ResponseEntity.noContent().build();
     }
 }

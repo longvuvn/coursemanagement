@@ -46,11 +46,11 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
     public OrderDetailDTO createOrderDetail(OrderDetailDTO orderDetailDTO) {
         UUID orderUUID = UUID.fromString(orderDetailDTO.getOrderId());
-        UUID courseId = UUID.fromString(orderDetailDTO.getCourseId());
+        UUID courseUUID = UUID.fromString(orderDetailDTO.getCourseId());
 
         Order order = orderRepository.findById(orderUUID)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found This Order"));
-        Course course = courseRepository.findById(courseId)
+        Course course = courseRepository.findById(courseUUID)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found This Course"));
 
         OrderDetail orderDetail = modelMapper.map(orderDetailDTO, OrderDetail.class);

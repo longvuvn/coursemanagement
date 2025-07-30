@@ -1,9 +1,7 @@
 package com.example.coursemanagement.controllers;
 
 
-import com.example.coursemanagement.models.auth.AuthRequest;
-import com.example.coursemanagement.models.auth.AuthResponse;
-import com.example.coursemanagement.models.auth.RefreshTokenRequest;
+import com.example.coursemanagement.models.auth.*;
 import com.example.coursemanagement.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,4 +26,9 @@ public class AuthController {
         return ResponseEntity.ok(authResponse);
     }
 
+    @PostMapping("/change-password")
+    public ResponseEntity<ChangePasswordResponse> changePassword (@RequestParam String username, @RequestBody ChangePasswordRequest request){
+        ChangePasswordResponse response = authService.ChangePassword(username, request);
+        return ResponseEntity.ok(response);
+    }
 }

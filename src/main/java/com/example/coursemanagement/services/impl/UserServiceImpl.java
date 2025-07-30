@@ -4,6 +4,7 @@ import com.example.coursemanagement.models.Role;
 import com.example.coursemanagement.models.User;
 import com.example.coursemanagement.models.dto.UserDTO;
 import com.example.coursemanagement.repositories.UserRepository;
+import com.example.coursemanagement.services.RoleService;
 import com.example.coursemanagement.services.UserService;
 import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private static final String DEFAULT_AVATAR_PATH = "/data/images/c21f969b5f03d33d43e04f8f136e7682.png";
-    private final RoleServiceImpl roleService;
+    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
