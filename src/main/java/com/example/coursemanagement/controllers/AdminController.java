@@ -1,15 +1,13 @@
 package com.example.coursemanagement.controllers;
 
-import com.example.coursemanagement.models.APIResponse;
 import com.example.coursemanagement.models.dto.AdminDTO;
 import com.example.coursemanagement.services.AdminService;
-import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDateTime;
-import java.util.Map;
+
+
 
 @RestController
 @RequestMapping("/api/v1/admins")
