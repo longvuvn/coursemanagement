@@ -8,6 +8,7 @@ import com.example.coursemanagement.models.Role;
 import com.example.coursemanagement.models.dto.LearnerDTO;
 import com.example.coursemanagement.repositories.LearnerRepository;
 import com.example.coursemanagement.repositories.RegistrationRepository;
+import com.example.coursemanagement.services.EmailService;
 import com.example.coursemanagement.services.LearnerService;
 import com.example.coursemanagement.services.exceptions.errors.DuplicateResourceException;
 import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
@@ -32,7 +33,7 @@ public class LearnerServiceImpl implements LearnerService {
     private final RegistrationRepository registrationRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
-
+    private final EmailService emailService;
 
     @Override
     public Pagination<LearnerDTO> getAllLearners(int page, int size) {
@@ -65,6 +66,7 @@ public class LearnerServiceImpl implements LearnerService {
     @Override
     public LearnerDTO createLearner(LearnerDTO learnerDTO) {
         Learner learner = modelMapper.map(learnerDTO, Learner.class);
+        String rawPassword = emailService.generateRandomPassword();
         Role role = roleService.getRoleByName("Learner");
         if (!StringUtils.hasText(learnerDTO.getAvatar())) {
             learnerDTO.setAvatar(DEFAULT_AVATAR_PATH);
@@ -75,12 +77,14 @@ public class LearnerServiceImpl implements LearnerService {
         if (learnerRepository.existsByPhoneNumber(learnerDTO.getPhoneNumber().trim())) {
             throw new DuplicateResourceException("Số điện thoại không hợp lệ");
         }
-        learner.setPassword(passwordEncoder.encode(learnerDTO.getPassword()));
+        learner.setPassword(passwordEncoder.encode(rawPassword));
         learner.setRole(role);
         learner.setStatus(UserStatus.ACTIVE);
         learner.setLevel(String.valueOf(LearnerLevel.BEGINNER));
         learner.setAvatar(learnerDTO.getAvatar());
-        return modelMapper.map(learnerRepository.save(learner), LearnerDTO.class);
+        Learner savedLearner = learnerRepository.save(learner);
+        emailService.sendEmail(learner.getEmail(), learner.getFullName(), rawPassword);
+        return modelMapper.map(savedLearner, LearnerDTO.class);
     }
 
     @Override

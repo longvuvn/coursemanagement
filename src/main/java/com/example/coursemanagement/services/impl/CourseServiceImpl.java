@@ -40,7 +40,8 @@ public class CourseServiceImpl implements CourseService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Course> coursePage = courseRepository.findByStatus(CourseStatus.ACTIVE, pageable);
 
-        List<CourseDTO> courseDTOS = coursePage.getContent().stream()
+        List<CourseDTO> courseDTOS = coursePage.getContent()
+                .stream()
                 .map(course -> modelMapper.map(course, CourseDTO.class) )
                 .collect(Collectors.toList());
 

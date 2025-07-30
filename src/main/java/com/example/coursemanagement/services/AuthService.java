@@ -1,10 +1,9 @@
 package com.example.coursemanagement.services;
 
-import com.example.coursemanagement.models.auth.AuthRequest;
-import com.example.coursemanagement.models.auth.AuthResponse;
-import com.example.coursemanagement.models.auth.RefreshTokenRequest;
+import com.example.coursemanagement.models.auth.*;
 
 public interface AuthService {
     AuthResponse authenticate(AuthRequest authRequest);
     AuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
+    ChangePasswordResponse ChangePassword(String username, ChangePasswordRequest changePasswordRequest);
 }

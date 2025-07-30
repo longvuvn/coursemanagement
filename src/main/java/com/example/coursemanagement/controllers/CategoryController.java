@@ -23,128 +23,38 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    //lấy tất cả category
+    //get all categories
     @GetMapping
-    public ResponseEntity<APIResponse<List<CategoryDTO>>> getAll() {
-        try{
-            List<CategoryDTO> categories = categoryService.getAllCategories();
-            APIResponse<List<CategoryDTO>> response = new APIResponse<>(
-                    "success",
-                    "Categories retrieved successfully",
-                    categories,
-                    null,
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.ok(response);
-        }catch (ResourceNotFoundException ex){
-            APIResponse<List<CategoryDTO>> response = new APIResponse<>(
-                    "error",
-                    "Categories retrieved failed",
-                    null,
-                    Map.of("error", ex.getMessage()),
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+    public ResponseEntity<List<CategoryDTO>> getAll() {
+        List<CategoryDTO> categories = categoryService.getAllCategories();
+        return ResponseEntity.status(HttpStatus.OK).body(categories);
     }
 
-    //lâ category theo id
+    //get category by id
     @GetMapping("/{id}")
-    public ResponseEntity<APIResponse<CategoryDTO>> getById(@Valid @PathVariable String id) {
-        try{
-            CategoryDTO category = categoryService.getCategoryById(id);
-            APIResponse<CategoryDTO> response = new APIResponse<>(
-                    "success",
-                    "Category retrieved successfully",
-                    category,
-                    null,
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.ok(response);
-        }catch (ResourceNotFoundException ex){
-            APIResponse<CategoryDTO> response = new APIResponse<>(
-                    "error",
-                    "Category not found",
-                    null,
-                    Map.of("error", ex.getMessage()) ,
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+    public ResponseEntity<CategoryDTO> getById(@Valid @PathVariable String id) {
+        CategoryDTO category = categoryService.getCategoryById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(category);
     }
 
-    //tạo category
+    //created category
     @PostMapping
-    public ResponseEntity<APIResponse<CategoryDTO>> create(@Valid @RequestBody CategoryDTO categoryDTO) {
-        try{
-            CategoryDTO created = categoryService.createCategory(categoryDTO);
-            APIResponse<CategoryDTO> response = new APIResponse<>(
-                    "success",
-                    "Category created successfully",
-                    created,
-                    null,
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        }catch (BadRequestException ex){
-            APIResponse<CategoryDTO> response = new APIResponse<>(
-                    "error",
-                    "Category created failed",
-                    null,
-                    Map.of("error", ex.getMessage()),
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+    public ResponseEntity<CategoryDTO> create(@Valid @RequestBody CategoryDTO categoryDTO) {
+        CategoryDTO created = categoryService.createCategory(categoryDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    //chỉnh sửa category
+    //update category
     @PutMapping("/{id}")
-    public ResponseEntity<APIResponse<CategoryDTO>> update(@PathVariable String id, @RequestBody CategoryDTO categoryDTO) {
-        try{
-            CategoryDTO updated = categoryService.updateCategory(categoryDTO, id);
-            APIResponse<CategoryDTO> response = new APIResponse<>(
-                    "success",
-                    "Category updated successfully",
-                    updated,
-                    null,
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.ok(response);
-        }catch (ResourceNotFoundException ex){
-            APIResponse<CategoryDTO> response = new APIResponse<>(
-                    "error",
-                    "Category updated failed",
-                    null,
-                    Map.of("error", ex.getMessage()),
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+    public ResponseEntity<CategoryDTO> update(@PathVariable String id, @RequestBody CategoryDTO categoryDTO) {
+        CategoryDTO updated = categoryService.updateCategory(categoryDTO, id);
+        return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
-    //xóa category
+    //delete category
     @DeleteMapping("/{id}")
-    public ResponseEntity<APIResponse<Void>> delete(@PathVariable String id) {
-        try {
-            categoryService.deleteCategory(id);
-            APIResponse<Void> response = new APIResponse<>(
-                    "success",
-                    "Category deleted successfully",
-                    null,
-                    null,
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
-        } catch (ResourceNotFoundException ex) {
-            APIResponse<Void> response = new APIResponse<>(
-                    "error",
-                    "Category deletion failed",
-                    null,
-                    Map.of("error", ex.getMessage()),
-                    LocalDateTime.now()
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

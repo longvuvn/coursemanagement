@@ -6,20 +6,12 @@ import java.util.List;
 
 public interface ChapterService {
     List<ChapterDTO> getAllChapters();
-
     ChapterDTO updateChapter(ChapterDTO chapterDTO, String id);
-
     ChapterDTO createChapter(ChapterDTO chapterDTO);
-
     ChapterDTO getChapterById(String id);
-
     void deleteChapter(String id);
-
     List<ChapterDTO> getChaptersByCourseId(String courseId);
-
     List<ChapterDTO> getChapterByTitle(String title);
-
     List<ChapterDTO> getLatestChapters();
-
     List<ChapterDTO> getOldestChapters();
 }
