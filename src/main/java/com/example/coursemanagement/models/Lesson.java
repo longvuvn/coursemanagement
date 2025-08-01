@@ -14,8 +14,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "\"lesson\"")
 @Data
-
-
 @EntityListeners(AuditingEntityListener.class)
 public class Lesson extends Auditing{
     @Id

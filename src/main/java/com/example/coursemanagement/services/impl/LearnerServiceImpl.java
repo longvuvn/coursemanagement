@@ -10,6 +10,7 @@ import com.example.coursemanagement.repositories.LearnerRepository;
 import com.example.coursemanagement.repositories.RegistrationRepository;
 import com.example.coursemanagement.services.EmailService;
 import com.example.coursemanagement.services.LearnerService;
+import com.example.coursemanagement.services.exceptions.errors.BadRequestException;
 import com.example.coursemanagement.services.exceptions.errors.DuplicateResourceException;
 import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -116,6 +117,9 @@ public class LearnerServiceImpl implements LearnerService {
         UUID uuid = UUID.fromString(id);
         Learner existingLearner = learnerRepository.findById(uuid)
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found This Learner"));
+        if(existingLearner.getTotalCourses() > 0){
+            throw new BadRequestException("Learner has courses, cannot be deleted");
+        }
         learnerRepository.delete(existingLearner);
     }
 
