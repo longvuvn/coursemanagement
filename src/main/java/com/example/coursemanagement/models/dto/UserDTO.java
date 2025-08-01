@@ -1,7 +1,9 @@
 package com.example.coursemanagement.models.dto;
 
-import com.example.coursemanagement.models.User;
+
 import lombok.Data;
+
+
 
 @Data
 public class UserDTO {
@@ -15,5 +17,4 @@ public class UserDTO {
     private String roleName;
     private String createdAt;
     private String updatedAt;
-
 }

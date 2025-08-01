@@ -30,7 +30,12 @@ public class SecurityConfig {
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/refresh",
                                 "/api/v1/learners",
-                                "/api/v1/courses/*"
+                                "/api/v1/courses/*",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/learners").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/admins/*").hasRole("Admin")

@@ -9,7 +9,7 @@ import java.util.Set;
 @Table(name = "\"learner\"")
 @Getter
 @Setter
-@PrimaryKeyJoinColumn(name = "id")// Chỉ định khóa chính của bảng con là khóa ngoại liên kết với bảng cha
+@PrimaryKeyJoinColumn(name = "id")
 public class Learner extends User {
 
     @Column(nullable = false)
