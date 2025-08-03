@@ -3,14 +3,17 @@ package com.example.coursemanagement.models;
 
 import com.example.coursemanagement.enums.RegistrationStatus;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Table(name = "\"registration\"")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Registration {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

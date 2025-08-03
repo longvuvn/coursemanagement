@@ -8,12 +8,9 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import lombok.Data;
-
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-
-
 import java.time.Instant;
+
 
 
 @MappedSuperclass

@@ -4,7 +4,7 @@ import com.example.coursemanagement.enums.LessonStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
@@ -13,7 +13,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "\"lesson\"")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Lesson extends Auditing{
     @Id

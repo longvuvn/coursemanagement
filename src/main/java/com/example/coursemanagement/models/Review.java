@@ -3,7 +3,7 @@ package com.example.coursemanagement.models;
 import com.example.coursemanagement.enums.ReviewStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
@@ -11,7 +11,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "\"review\"")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Review extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

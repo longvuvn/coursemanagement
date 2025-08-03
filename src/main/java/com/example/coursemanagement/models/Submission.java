@@ -3,13 +3,17 @@ package com.example.coursemanagement.models;
 import com.example.coursemanagement.enums.SubmisstionStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.*;
+
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Table(name = "\"submission\"")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Submission {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

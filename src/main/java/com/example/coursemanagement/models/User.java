@@ -3,14 +3,17 @@ package com.example.coursemanagement.models;
 import com.example.coursemanagement.enums.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.Data;
+import lombok.*;
+
 import java.util.UUID;
 
 @Entity
 @Table(name = "\"user\"")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
-
 public class User extends Auditing {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

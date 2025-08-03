@@ -9,6 +9,8 @@ import java.util.Set;
 @Table(name = "\"learner\"")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @PrimaryKeyJoinColumn(name = "id")
 public class Learner extends User {
 

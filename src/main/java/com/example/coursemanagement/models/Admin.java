@@ -12,6 +12,8 @@ import lombok.*;
 @PrimaryKeyJoinColumn(name = "id")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Admin extends User {
 
     @Column(nullable = false, length = 100)
