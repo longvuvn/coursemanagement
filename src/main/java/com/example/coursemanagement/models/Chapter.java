@@ -4,7 +4,7 @@ import com.example.coursemanagement.enums.ChapterStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
@@ -13,10 +13,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "\"chapter\"")
-@Data
-
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-
 public class Chapter extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -2,7 +2,6 @@ package com.example.coursemanagement.models;
 
 
 import lombok.Data;
-
 import java.util.List;
 
 @Data

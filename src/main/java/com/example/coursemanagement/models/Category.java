@@ -3,14 +3,18 @@ package com.example.coursemanagement.models;
 import com.example.coursemanagement.enums.CategoryStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Set;
 import java.util.UUID;
 
+
 @Entity
 @Table(name = "\"category\"")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

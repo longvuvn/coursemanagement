@@ -2,7 +2,7 @@ package com.example.coursemanagement.models;
 
 import com.example.coursemanagement.enums.OrderStatus;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
@@ -11,8 +11,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "\"order\"")
-@Data
-
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Order extends Auditing{
     @Id

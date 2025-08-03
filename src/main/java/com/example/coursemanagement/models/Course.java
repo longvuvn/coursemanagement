@@ -4,7 +4,7 @@ import com.example.coursemanagement.enums.CourseStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
@@ -13,10 +13,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "\"course\"")
-@Data
-
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-
 public class Course extends Auditing {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
