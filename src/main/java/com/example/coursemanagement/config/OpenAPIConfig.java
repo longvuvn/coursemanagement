@@ -1,5 +1,6 @@
 package com.example.coursemanagement.config;
 
+
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -10,13 +11,12 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-
+import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
-@Component
-public class OpenApiConfig {
 
+@Configuration
+public class OpenAPIConfig {
 
     @Bean
     public GroupedOpenApi publicApi(@Value("${openapi.service.api-docs}")String apiDocs) {
@@ -25,6 +25,7 @@ public class OpenApiConfig {
                 .packagesToScan("com.example.coursemanagement.controllers")
                 .build();
     }
+
 
     @Bean
     public OpenAPI openApi(
@@ -36,12 +37,12 @@ public class OpenApiConfig {
                 .servers(List.of(new Server().url(serverUrl)))
                 .components(
                         new Components()
-                            .addSecuritySchemes(
-                                    securitySchemeName,
-                                    new SecurityScheme()
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")))
+                                .addSecuritySchemes(
+                                        securitySchemeName,
+                                        new SecurityScheme()
+                                                .type(SecurityScheme.Type.HTTP)
+                                                .scheme("bearer")
+                                                .bearerFormat("JWT")))
                 .security(List.of(new SecurityRequirement().addList(securitySchemeName)))
                 .info(new Info().title(title)
                         .description("Course Management API")
