@@ -11,7 +11,6 @@ import com.example.coursemanagement.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,36 +27,29 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse authenticate(AuthRequest authRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                authRequest.getUsername(),
-                authRequest.getPassword()));
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(authRequest.getUsername());
-        String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername());
-        String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
-        User user = customUserDetailsService.getUserByUsername(userDetails.getUsername());
-        String userId = user.getId().toString();
-        String fullName = user.getFullName();
-        String email = user.getEmail();
-        String avatar = user.getAvatar();
-        return new AuthResponse(accessToken, refreshToken, userId, fullName, email, avatar);
+                        authRequest.getUsername(),
+                        authRequest.getPassword())
+        );
+        User user = customUserDetailsService.getUserByUsername(authRequest.getUsername());
+        String accessToken = jwtUtil.generateAccessToken(user);
+        String refreshToken = jwtUtil.generateRefreshToken(user);
+        return new AuthResponse(accessToken, refreshToken);
     }
+
 
     @Override
     public AuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
         String refreshToken = refreshTokenRequest.getRefreshToken();
-        if(!jwtUtil.validateToken(refreshToken)){
-            return new AuthResponse("không hợp lệ", "không hợp lệ", "không hợp lệ", "không hợp lệ", "không hợp lệ", "không hợp lệ");
-        }else {
-            String username = jwtUtil.extractUsername(refreshToken);
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-            String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername());
-            User user = customUserDetailsService.getUserByUsername(userDetails.getUsername());
-            String userId = user.getId().toString();
-            String fullName = user.getFullName();
-            String email = user.getEmail();
-            String avatar = user.getAvatar();
-            return new AuthResponse(accessToken, refreshToken, userId, fullName,email, avatar);
+        if (!jwtUtil.validateToken(refreshToken)) {
+            return new AuthResponse("invalid", "invalid");
         }
+        String email = jwtUtil.extractUsername(refreshToken);
+        User user = customUserDetailsService.getUserByUsername(email);
+        String newAccessToken = jwtUtil.generateAccessToken(user);
+
+        return new AuthResponse(newAccessToken, refreshToken);
     }
+
 
     @Override
     public ChangePasswordResponse ChangePassword(String username, ChangePasswordRequest changePasswordRequest) {

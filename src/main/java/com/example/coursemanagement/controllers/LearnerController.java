@@ -21,7 +21,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/learners")
 @RequiredArgsConstructor
-@Tag(name = "Learner API", description = "Operations related to Learners")
+@Tag(name = "Learner Management", description = "Operations related to Learners")
 public class LearnerController {
 
     private final LearnerService learnerService;
@@ -110,4 +110,3 @@ public class LearnerController {
         return ResponseEntity.noContent().build();
     }
 }
-

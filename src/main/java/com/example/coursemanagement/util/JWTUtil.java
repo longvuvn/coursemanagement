@@ -1,15 +1,17 @@
 package com.example.coursemanagement.util;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+
+import com.example.coursemanagement.models.User;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import java.security.Key;
 import java.util.Date;
 
-
 @Component
 public class JWTUtil {
+
     @Value("${jwt.secret}")
     private String jwtSecret;
 
@@ -19,24 +21,47 @@ public class JWTUtil {
     @Value("${jwt.expiration.refresh-token}")
     private long jwtRefreshExpiration;
 
-    public String generateToken(String username, long expiration) {
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
+
+
+    private String generateToken(User user, long expiration) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expiration);
-        Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(user.getEmail())
+                .claim("userId", user.getId().toString())
+                .claim("fullName", user.getFullName())
+                .claim("avatar", user.getAvatar())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .signWith(key)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String generateAccessToken(String username) {
-        return generateToken(username, jwtAccessExpiration);
+
+    public String generateAccessToken(User user) {
+        return generateToken(user, jwtAccessExpiration);
     }
 
-    public String generateRefreshToken(String username) {
-        return generateToken(username, jwtRefreshExpiration);
+
+    public String generateRefreshToken(User user) {
+        return generateToken(user, jwtRefreshExpiration);
+    }
+
+
+    public String extractUserId(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    public Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public String extractUsername(String token) {
@@ -51,12 +76,9 @@ public class JWTUtil {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
-                    .build()
-                    .parseClaimsJws(token);
+            extractAllClaims(token); // sẽ ném exception nếu token sai
             return true;
-        } catch (Exception e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }

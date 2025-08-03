@@ -4,7 +4,6 @@ import com.example.coursemanagement.enums.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.util.UUID;
 
 @Entity
@@ -12,7 +11,7 @@ import java.util.UUID;
 @Data
 @Inheritance(strategy = InheritanceType.JOINED)
 
-public class User extends Auditing{
+public class User extends Auditing {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -22,13 +21,9 @@ public class User extends Auditing{
     @NotBlank(message = "Tên không được để trống")
     private String fullName;
 
-
     @Email(message = "Email không hợp lệ")
     @Column(nullable = false, unique = true)
-    @Pattern(
-            regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.(com|vn)$",
-            message = "Email phải kết thúc bằng .com hoặc .vn"
-    )
+    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.(com|vn)$", message = "Email phải kết thúc bằng .com hoặc .vn")
     @NotBlank(message = "Email không được để trống")
     private String email;
 

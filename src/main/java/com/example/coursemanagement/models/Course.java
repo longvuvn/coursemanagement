@@ -8,10 +8,8 @@ import lombok.Data;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
-
 
 @Entity
 @Table(name = "\"course\"")
@@ -19,7 +17,7 @@ import java.util.UUID;
 
 @EntityListeners(AuditingEntityListener.class)
 
-public class Course extends Auditing{
+public class Course extends Auditing {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
