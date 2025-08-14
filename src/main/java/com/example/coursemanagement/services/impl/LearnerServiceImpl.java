@@ -5,6 +5,7 @@ import com.example.coursemanagement.enums.UserStatus;
 import com.example.coursemanagement.models.Learner;
 import com.example.coursemanagement.models.Pagination;
 import com.example.coursemanagement.models.Role;
+import com.example.coursemanagement.models.auth.AuthRegister;
 import com.example.coursemanagement.models.dto.LearnerDTO;
 import com.example.coursemanagement.repositories.LearnerRepository;
 import com.example.coursemanagement.repositories.RegistrationRepository;
@@ -20,7 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,24 +65,21 @@ public class LearnerServiceImpl implements LearnerService {
     }
 
     @Override
-    public LearnerDTO createLearner(LearnerDTO learnerDTO) {
-        Learner learner = modelMapper.map(learnerDTO, Learner.class);
+    public LearnerDTO createLearner(AuthRegister register) {
+        Learner learner = modelMapper.map(register, Learner.class);
         String rawPassword = emailService.generateRandomPassword();
         Role role = roleService.getRoleByName("Learner");
-        if (!StringUtils.hasText(learnerDTO.getAvatar())) {
-            learnerDTO.setAvatar(DEFAULT_AVATAR_PATH);
-        }
-        if (learnerRepository.existsByEmail(learnerDTO.getEmail().trim())) {
+        if (learnerRepository.existsByEmail(register.getEmail().trim())) {
             throw new DuplicateResourceException("Email không hợp lệ");
         }
-        if (learnerRepository.existsByPhoneNumber(learnerDTO.getPhoneNumber().trim())) {
+        if (learnerRepository.existsByPhoneNumber(register.getPhoneNumber().trim())) {
             throw new DuplicateResourceException("Số điện thoại không hợp lệ");
         }
         learner.setPassword(passwordEncoder.encode(rawPassword));
         learner.setRole(role);
         learner.setStatus(UserStatus.ACTIVE);
         learner.setLevel(String.valueOf(LearnerLevel.BEGINNER));
-        learner.setAvatar(learnerDTO.getAvatar());
+        learner.setAvatar(DEFAULT_AVATAR_PATH);
         Learner savedLearner = learnerRepository.save(learner);
         emailService.sendEmail(learner.getEmail(), learner.getFullName(), rawPassword);
         return modelMapper.map(savedLearner, LearnerDTO.class);

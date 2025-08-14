@@ -14,6 +14,7 @@ import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundE
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -46,6 +47,8 @@ public class RegisterServiceImpl implements RegistrationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found This Registration"));
     }
 
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RegistrationDTO createRegistration(RegistrationDTO registrationDTO) {
         UUID learnerId = UUID.fromString(registrationDTO.getLearnerId());
