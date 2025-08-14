@@ -1,6 +1,7 @@
 package com.example.coursemanagement.controllers;
 
 import com.example.coursemanagement.models.Pagination;
+import com.example.coursemanagement.models.auth.AuthRegister;
 import com.example.coursemanagement.models.dto.CourseDTO;
 import com.example.coursemanagement.models.dto.LearnerDTO;
 import com.example.coursemanagement.services.CourseService;
@@ -81,8 +82,8 @@ public class LearnerController {
             @ApiResponse(responseCode = "201", description = "Learner created"),
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
-    public ResponseEntity<LearnerDTO> create(@Valid @RequestBody LearnerDTO learnerDTO) {
-        LearnerDTO created = learnerService.createLearner(learnerDTO);
+    public ResponseEntity<LearnerDTO> create(@Valid @RequestBody AuthRegister register) {
+        LearnerDTO created = learnerService.createLearner(register);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 

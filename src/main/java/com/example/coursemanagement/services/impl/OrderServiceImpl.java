@@ -13,6 +13,8 @@ import com.example.coursemanagement.services.exceptions.errors.ResourceNotFoundE
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,6 +43,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Not Found This Order"));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public OrderDTO createOrder(OrderDTO orderDTO) {
         UUID learnerId = UUID.fromString(orderDTO.getLearnerId());

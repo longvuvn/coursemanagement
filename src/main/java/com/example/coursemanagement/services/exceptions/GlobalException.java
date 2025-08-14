@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -17,37 +18,42 @@ public class GlobalException {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Map<String, Object>> handleBadRequestException(BadRequestException e) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), "Yêu cầu không hợp lệ");
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Yêu cầu không hợp lệ", e.getMessage());
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<Map<String, Object>> handleDuplicateResourceException(DuplicateResourceException e) {
-        return buildErrorResponse(HttpStatus.CONFLICT, e.getMessage(), "Tài nguyên bị trùng");
+        return buildErrorResponse(HttpStatus.CONFLICT, "Tài nguyên bị trùng",e.getMessage());
     }
 
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<Map<String, Object>> handleForbiddenException(ForbiddenException e) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage(), "Truy cập bị từ chối");
+        return buildErrorResponse(HttpStatus.FORBIDDEN, "Truy cập bị từ chối", e.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleResourceNotFoundException(ResourceNotFoundException e) {
-        return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage(), "Không tìm thấy dữ liệu");
+        return buildErrorResponse(HttpStatus.NOT_FOUND, "Không tìm thấy dữ liệu", e.getMessage());
     }
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<Map<String, Object>> handleUnauthorizedException(UnauthorizedException e) {
-        return buildErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage(), "Không có quyền truy cập");
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED,  "Không có quyền truy cập",e.getMessage());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String, Object>> handleAccessDeniedException(AccessDeniedException e) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage(), "Bạn không có quyền thực hiện hành động này");
+        return buildErrorResponse(HttpStatus.FORBIDDEN, "Bạn không có quyền thực hiện hành động này",e.getMessage());
     }
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<Map<String, Object>> handleValidationException(ValidationException e) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), "Dữ liệu không hợp lệ");
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Dữ liệu không hợp lệ",e.getMessage());
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleBadCredentialsException(BadCredentialsException e) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Unauthorized", e.getMessage());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -68,7 +74,6 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Exception mặc định cho các lỗi chưa xử lý
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneralException(Exception e) {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), "Lỗi hệ thống");
@@ -77,9 +82,9 @@ public class GlobalException {
     private ResponseEntity<Map<String, Object>> buildErrorResponse(HttpStatus status, String message, String errorDescription) {
         Map<String, Object> response = new HashMap<>();
         response.put("status", status.value());
-        response.put("timestamp", LocalDateTime.now());
         response.put("message", message);
         response.put("error", errorDescription);
+        response.put("timestamp", LocalDateTime.now());
         return ResponseEntity.status(status).body(response);
     }
 }
