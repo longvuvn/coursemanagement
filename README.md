@@ -8,7 +8,7 @@
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Status](https://img.shields.io/badge/Status-Active-success.svg)
 
-**Một ứng dụng web quản lý khóa học mạnh mẽ được xây dựng trên nền tảng Spring Boot, giúp tối ưu hóa việc quản lý sinh viên, giảng viên và các chương trình đào tạo.**
+**Backend API mạnh mẽ được xây dựng trên Spring Boot, cung cấp các dịch vụ RESTful cho việc quản lý khóa học, sinh viên, giảng viên và chương trình đào tạo.**
 
 [English](#english-version) | [Demo](#-demo) | [Báo Lỗi](https://github.com/longvuvn/coursemanagement/issues) | [Yêu Cầu Tính Năng](https://github.com/longvuvn/coursemanagement/issues)
 
